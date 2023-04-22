@@ -1,0 +1,21 @@
+{
+  "devDependencies": {
+    "vuepress": "^1.9.9",
+    "vuepress-plugin-clipboard": "^2.1.5",
+    "vuepress-plugin-code-switcher": "^2.0.0",
+    "vuepress-plugin-mathjax": "^1.2.8",
+    "vuepress-plugin-nuggets-style-copy": "^1.0.3",
+    "vuepress-theme-reco": "^1.6.17"
+  },
+  "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
+  },
+  "dependencies": {
+    "markdown-it-copy": "^1.2.0",
+    "markdown-it-katex": "^2.0.3",
+    "vue-highlight-code": "^0.1.16",
+    "vuepress-plugin-code-copy": "^1.0.6",
+    "vuepress-plugin-copy-code2": "^2.0.0-beta.166"
+  }
+}
