@@ -134,46 +134,41 @@ const rssHref = getRelativeLocaleUrl(
     </script>
     <script is:inline>
       (function () {
-        let mermaidReady = false;
+        var initDone = false;
 
-        function render() {
+        async function render() {
           if (typeof mermaid === "undefined") {
             setTimeout(render, 100);
             return;
           }
-          if (!mermaidReady) {
+          if (!initDone) {
             mermaid.initialize({ startOnLoad: false, theme: "base" });
-            mermaidReady = true;
+            initDone = true;
           }
+
           // Shiki renders ```mermaid as <pre data-language="mermaid">
-          document.querySelectorAll("pre[data-language='mermaid']").forEach(function (pre) {
-            if (pre.dataset.mermaidDone) return;
+          var pres = document.querySelectorAll("pre[data-language='mermaid']");
+          for (var i = 0; i < pres.length; i++) {
+            var pre = pres[i];
+            if (pre.dataset.mermaidDone) continue;
             pre.dataset.mermaidDone = "1";
             var div = document.createElement("div");
             div.className = "mermaid";
-            div.textContent = pre.textContent || "";
-            pre.parentElement.replaceChild(div, pre);
-          });
+            div.textContent = pre.textContent;
+            pre.parentNode.replaceChild(div, pre);
+          }
+
           var divs = document.querySelectorAll("div.mermaid:not([data-processed])");
           if (divs.length === 0) return;
-          divs.forEach(function (el) { el.dataset.processed = "1"; });
-          try {
-            mermaid.run({ querySelector: "div.mermaid[data-processed]" }).catch(function (e) {
-              console.warn("mermaid error, retrying without querySelector:", e);
-              mermaid.run();
-            });
-          } catch (e) {
-            console.warn("mermaid run threw, retrying:", e);
-            mermaid.run();
+          for (var j = 0; j < divs.length; j++) {
+            divs[j].setAttribute("data-processed", "1");
           }
+
+          await mermaid.run();
         }
 
         document.addEventListener("astro:page-load", render);
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", render);
-        } else {
-          render();
-        }
+        render();
       })();
     </script>
   </body>
