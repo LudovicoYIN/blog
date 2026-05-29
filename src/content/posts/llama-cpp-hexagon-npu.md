@@ -1,6 +1,6 @@
 ---
 author: Ludovico
-pubDatetime: 2026-05-29T12:00:00Z
+pubDatetime: 2026-05-29T00:00:00Z
 title: llama.cpp 高通 Hexagon NPU 部署实战
 featured: true
 draft: false
