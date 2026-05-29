@@ -145,14 +145,13 @@ const rssHref = getRelativeLocaleUrl(
             mermaid.initialize({ startOnLoad: false, theme: "base" });
             mermaidReady = true;
           }
-          // Convert any code.language-mermaid blocks to div.mermaid
-          document.querySelectorAll("code.language-mermaid").forEach(function (code) {
-            var pre = code.closest("pre") || code.parentElement;
-            if (!pre || pre.dataset.mermaidDone) return;
+          // Shiki renders ```mermaid as <pre data-language="mermaid">
+          document.querySelectorAll("pre[data-language='mermaid']").forEach(function (pre) {
+            if (pre.dataset.mermaidDone) return;
             pre.dataset.mermaidDone = "1";
             var div = document.createElement("div");
             div.className = "mermaid";
-            div.textContent = code.textContent || "";
+            div.textContent = pre.textContent || "";
             pre.parentElement.replaceChild(div, pre);
           });
           // Render all div.mermaid (existing + newly created)
