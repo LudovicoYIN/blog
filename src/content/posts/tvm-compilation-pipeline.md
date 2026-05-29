@@ -184,9 +184,9 @@ VM 逐条解释上面的指令：检查输入 → 分配内存 → 调用 matmul
 
 ```mermaid
 flowchart LR
-    A(["Relax IR: 算子调用"]) --> B(["call_tir: 绑定实现"])
-    B --> C(["VM 指令: alloc + call"])
-    C --> D(["结果: Tensor 输出"])
+    A[Relax IR] -->|LegalizeOps| B[call_tir]
+    B -->|build| C[VM 指令]
+    C -->|执行| D[结果]
 ```
 
 ## 每层的分工
