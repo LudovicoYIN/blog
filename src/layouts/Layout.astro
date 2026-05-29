@@ -154,12 +154,18 @@ const rssHref = getRelativeLocaleUrl(
             div.textContent = pre.textContent || "";
             pre.parentElement.replaceChild(div, pre);
           });
-          // Render all div.mermaid (existing + newly created)
-          document.querySelectorAll("div.mermaid").forEach(function (el) {
-            if (el.dataset.mermaidDone) return;
-            el.dataset.mermaidDone = "1";
-          });
-          mermaid.run({ querySelector: "div.mermaid" });
+          var divs = document.querySelectorAll("div.mermaid:not([data-processed])");
+          if (divs.length === 0) return;
+          divs.forEach(function (el) { el.dataset.processed = "1"; });
+          try {
+            mermaid.run({ querySelector: "div.mermaid[data-processed]" }).catch(function (e) {
+              console.warn("mermaid error, retrying without querySelector:", e);
+              mermaid.run();
+            });
+          } catch (e) {
+            console.warn("mermaid run threw, retrying:", e);
+            mermaid.run();
+          }
         }
 
         document.addEventListener("astro:page-load", render);

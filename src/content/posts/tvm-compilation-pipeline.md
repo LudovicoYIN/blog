@@ -183,10 +183,10 @@ VM 逐条解释上面的指令：检查输入 → 分配内存 → 调用 matmul
 把刚才的 demo 串起来，每个阶段的输入输出：
 
 ```mermaid
-flowchart LR
-    A[Relax IR] -->|LegalizeOps| B[call_tir]
-    B -->|build| C[VM 指令]
-    C -->|执行| D[结果]
+graph LR
+    A[Relax IR] --> B[call_tir]
+    B --> C[VM instructions]
+    C --> D[Result]
 ```
 
 ## 每层的分工
