@@ -30,31 +30,32 @@ PyTorch / TensorFlow / ONNX
 ```mermaid
 flowchart TD
     Frontend["前端<br/>TFLite / ONNX / PyTorch"]
-    
-    subgraph Relax["Relax IR（图级）"]
-        R1["@R.function<br/>def main(a, b, bias):<br/>  lv = R.matmul(a, b)<br/>  return R.add(lv, bias)"]
-        C1["概念: DataflowBlock<br/>StructInfo · call_tir"]
-    end
-    
-    subgraph TIR["TIR（张量级）"]
-        T1["for i in range(128):<br/>  for j in range(512):<br/>    for k in range(256):<br/>      C[i,j] += A[i,k]*B[k,j]"]
-        C2["概念: For · Block · Buffer<br/>schedule primitive"]
-    end
-    
-    subgraph Target["Target（代码生成）"]
-        TG1["TIR → LLVM IR → x86/ARM<br/>TIR → CUDA C → GPU<br/>TIR → SPIR-V → Vulkan"]
-        C3["一套接口，多种后端"]
-    end
-    
-    subgraph Runtime["Runtime（执行）"]
-        RT1["VirtualMachine 执行 VM 指令<br/>RPC 远程分发<br/>cuBLAS/cuDNN/CUTLASS 集成"]
+
+    subgraph Relax["Relax IR · 图级"]
+        direction LR
+        R1["算子调用<br/>matmul · add · conv"]
+        R2["核心概念<br/>DataflowBlock · StructInfo"]
     end
 
-    Foundation["tvm-ffi 地基<br/>Object 系统 · 类型擦除 · Packed Function · DLPack"]
+    subgraph TIR["TIR · 张量级"]
+        direction LR
+        T1["循环嵌套<br/>For · Block · Buffer"]
+        T2["调度原语<br/>split · fuse · vectorize"]
+    end
+
+    subgraph Target["Target · 代码生成"]
+        TG1["LLVM → x86/ARM<br/>CUDA → GPU<br/>SPIR-V → Vulkan/Metal"]
+    end
+
+    subgraph Runtime["Runtime · 执行"]
+        RT1["VM 执行器 · RPC 远程<br/>cuBLAS · cuDNN · CUTLASS"]
+    end
+
+    Foundation["地基: tvm-ffi<br/>Object · Any · Packed Function · DLPack"]
 
     Frontend --> Relax
-    Relax -->|"LegalizeOps<br/>算子 → call_tir"| TIR
-    TIR -->|"LowerPass<br/>Relax → VM 指令 + TIR"| Target
+    Relax -->|"LegalizeOps"| TIR
+    TIR -->|"LowerPass"| Target
     Target -->|"codegen"| Runtime
     Runtime -.-> Foundation
 ```
@@ -188,10 +189,9 @@ VM 逐条解释上面的指令：检查输入 → 分配内存 → 调用 matmul
 
 ```mermaid
 flowchart LR
-    A["Relax IR<br/>算子调用<br/>R.matmul / R.add"]
-    -->|"LegalizeOps"| B["Legalized Relax<br/>call_tir<br/>绑定到 TIR 实现"]
-    -->|"relax.build"| C["VM 指令<br/>alloc_storage<br/>alloc_tensor<br/>call matmul / call add"]
-    -->|"VM 执行"| D["结果<br/>result = vm['main'](a,b,bias)"]
+    A["Relax IR<br/>算子调用"] -->|"LegalizeOps"| B["call_tir<br/>绑定 TIR 实现"]
+    B -->|"relax.build"| C["VM 指令<br/>alloc + call"]
+    C -->|"VM"| D["结果<br/>Tensor 输出"]
 ```
 
 ## 每层的分工

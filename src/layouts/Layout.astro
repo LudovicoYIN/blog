@@ -108,6 +108,18 @@ const rssHref = getRelativeLocaleUrl(
     <ClientRouter />
 
     <!-- Mermaid -->
+    <style is:global>
+      div.mermaid {
+        display: flex;
+        justify-content: center;
+        margin: 1.5rem 0;
+        overflow-x: auto;
+      }
+      div.mermaid svg {
+        max-width: 100%;
+        height: auto;
+      }
+    </style>
     <script
       src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"
       is:inline
@@ -122,26 +134,16 @@ const rssHref = getRelativeLocaleUrl(
     </script>
     <script is:inline>
       (function () {
-        let ran = false;
-        function renderMermaid() {
-          if (ran) return;
-          const blocks = document.querySelectorAll("pre code.language-mermaid");
-          if (blocks.length === 0) return;
-          ran = true;
-          // Transform each code block into a mermaid div
-          blocks.forEach((code) => {
-            const pre = code.parentElement;
-            if (!pre) return;
-            const div = document.createElement("div");
-            div.className = "mermaid";
-            div.textContent = code.textContent || "";
-            pre.replaceWith(div);
+        function init() {
+          if (typeof mermaid === "undefined") return;
+          document.querySelectorAll("div.mermaid").forEach((el) => {
+            if (el.getAttribute("data-processed")) return;
+            el.setAttribute("data-processed", "true");
           });
-          mermaid.initialize({ startOnLoad: false, theme: "default" });
-          mermaid.run();
+          mermaid.initialize({ startOnLoad: true, theme: "base" });
         }
-        document.addEventListener("astro:page-load", renderMermaid);
-        document.addEventListener("DOMContentLoaded", renderMermaid);
+        document.addEventListener("astro:page-load", init);
+        document.addEventListener("DOMContentLoaded", init);
       })();
     </script>
   </body>
