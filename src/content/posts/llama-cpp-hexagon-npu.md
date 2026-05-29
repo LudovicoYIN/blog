@@ -1,7 +1,7 @@
 ---
 author: Ludovico
 pubDatetime: 2026-05-29T00:00:00Z
-title: llama.cpp 高通 Hexagon NPU 部署实战
+title: llama.cpp 高通 Hexagon NPU 初跑 Qwen3.5 4B 模型
 featured: true
 draft: false
 tags:
