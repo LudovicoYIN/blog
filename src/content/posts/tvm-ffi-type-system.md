@@ -1,12 +1,12 @@
 ---
 author: Ludovico
 pubDatetime: 2026-05-28T14:00:00Z
-title: TVM FFI 类型系统与容器——跨语言的数据桥梁
+title: TVM FFI（二）：类型系统与容器
 featured: false
 draft: false
 tags:
   - AI编译器
-description: 深入 TVM FFI 的容器类型、Any/AnyView 所有权模型、结构相等性、反射系统和 Dataclass 机制。
+description: Any/AnyView 所有权语义、Array/Map/Variant/Expected 容器、结构相等性与哈希、反射系统与 Dataclass。
 ---
 
 [上一篇](/posts/tvm-ffi-deep-dive/) 讲了 TVM FFI 的骨架：对象系统、类型擦除、Packed Function 和 DLPack。这篇继续往下挖，覆盖数据层——值怎么在不同语言之间安全高效地传递。

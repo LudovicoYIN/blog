@@ -1,12 +1,12 @@
 ---
 author: Ludovico
 pubDatetime: 2026-05-28T16:00:00Z
-title: TVM FFI 生态全景——Python/Rust 绑定、JIT 编译与工具链
+title: TVM FFI（三）：多语言绑定与工具链
 featured: false
 draft: false
 tags:
   - AI编译器
-description: 覆盖 TVM FFI 的 Python SDK、Rust 绑定、JIT 编译系统、stubgen 类型标注生成、addons 和 stream 管理。
+description: Python/Rust 绑定 SDK、JIT 即时编译、stubgen 类型标注生成、全局注册表、stream 管理及 addons。
 ---
 
 这是 TVM FFI 系列第三篇。[前两篇](/posts/tvm-ffi-deep-dive/) 讲了核心骨架和数据层，这一篇把剩下的生态拼图补全：多语言绑定、JIT 编译、工程工具和运行时机制。

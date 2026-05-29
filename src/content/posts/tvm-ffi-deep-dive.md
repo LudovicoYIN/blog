@@ -1,12 +1,12 @@
 ---
 author: Ludovico
 pubDatetime: 2026-05-28T12:00:00Z
-title: TVM FFI 深度解析：机器学习系统的开放 ABI 与 FFI
+title: TVM FFI（一）：对象系统与调用约定
 featured: true
 draft: false
 tags:
   - AI编译器
-description: 从对象系统到跨语言调用，深入理解 TVM FFI 如何成为 ML 编译器的基础设施层，以及它如何让 C++、Python、Rust 无缝协作。
+description: TVM FFI 的核心骨架：引用计数对象系统、类型擦除容器 TVMFFIAny、Packed Function 调用约定，以及 DLPack 零拷贝张量传递。
 ---
 
 ## 为什么需要 TVM FFI？
