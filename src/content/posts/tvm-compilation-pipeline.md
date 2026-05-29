@@ -29,35 +29,30 @@ PyTorch / TensorFlow / ONNX
 
 ```mermaid
 flowchart TD
-    Frontend["前端<br/>TFLite / ONNX / PyTorch"]
+    Frontend["前端: TFLite / ONNX / PyTorch"]
 
     subgraph Relax["Relax IR · 图级"]
-        direction LR
-        R1["算子调用<br/>matmul · add · conv"]
-        R2["核心概念<br/>DataflowBlock · StructInfo"]
+        R1["R.matmul / R.add / R.call_tir"]
+        R2["DataflowBlock · StructInfo"]
     end
 
     subgraph TIR["TIR · 张量级"]
-        direction LR
-        T1["循环嵌套<br/>For · Block · Buffer"]
-        T2["调度原语<br/>split · fuse · vectorize"]
+        T1["For · Block · Buffer · Alloc"]
+        T2["split / fuse / reorder / vectorize"]
     end
 
     subgraph Target["Target · 代码生成"]
-        TG1["LLVM → x86/ARM<br/>CUDA → GPU<br/>SPIR-V → Vulkan/Metal"]
+        TG1["LLVM / CUDA / Vulkan / Metal"]
     end
 
     subgraph Runtime["Runtime · 执行"]
-        RT1["VM 执行器 · RPC 远程<br/>cuBLAS · cuDNN · CUTLASS"]
+        RT1["VM · RPC · cuBLAS · cuDNN"]
     end
-
-    Foundation["地基: tvm-ffi<br/>Object · Any · Packed Function · DLPack"]
 
     Frontend --> Relax
     Relax -->|"LegalizeOps"| TIR
     TIR -->|"LowerPass"| Target
     Target -->|"codegen"| Runtime
-    Runtime -.-> Foundation
 ```
 
 这张图从上到下是编译流水线，右边标注了每层的核心概念。
@@ -189,9 +184,9 @@ VM 逐条解释上面的指令：检查输入 → 分配内存 → 调用 matmul
 
 ```mermaid
 flowchart LR
-    A["Relax IR<br/>算子调用"] -->|"LegalizeOps"| B["call_tir<br/>绑定 TIR 实现"]
-    B -->|"relax.build"| C["VM 指令<br/>alloc + call"]
-    C -->|"VM"| D["结果<br/>Tensor 输出"]
+    A[Relax IR: 算子调用] --> B[call_tir: 绑定实现]
+    B --> C[VM 指令: alloc + call]
+    C --> D[结果: Tensor 输出]
 ```
 
 ## 每层的分工
