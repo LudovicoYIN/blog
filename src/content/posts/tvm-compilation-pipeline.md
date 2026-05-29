@@ -31,28 +31,28 @@ PyTorch / TensorFlow / ONNX
 flowchart TD
     Frontend["前端: TFLite / ONNX / PyTorch"]
 
-    subgraph Relax["Relax IR · 图级"]
+    subgraph RelaxStage["Relax IR · 图级"]
         R1["R.matmul / R.add / R.call_tir"]
         R2["DataflowBlock · StructInfo"]
     end
 
-    subgraph TIR["TIR · 张量级"]
+    subgraph TIRStage["TIR · 张量级"]
         T1["For · Block · Buffer · Alloc"]
         T2["split / fuse / reorder / vectorize"]
     end
 
-    subgraph Target["Target · 代码生成"]
+    subgraph TargetStage["Target · 代码生成"]
         TG1["LLVM / CUDA / Vulkan / Metal"]
     end
 
-    subgraph Runtime["Runtime · 执行"]
+    subgraph RuntimeStage["Runtime · 执行"]
         RT1["VM · RPC · cuBLAS · cuDNN"]
     end
 
-    Frontend --> Relax
-    Relax -->|"LegalizeOps"| TIR
-    TIR -->|"LowerPass"| Target
-    Target -->|"codegen"| Runtime
+    Frontend --> R1
+    R1 -->|"LegalizeOps"| T1
+    T1 -->|"LowerPass"| TG1
+    TG1 -->|"codegen"| RT1
 ```
 
 这张图从上到下是编译流水线，右边标注了每层的核心概念。
