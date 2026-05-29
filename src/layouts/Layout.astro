@@ -135,6 +135,17 @@ const rssHref = getRelativeLocaleUrl(
     <script is:inline>
       (function () {
         var initDone = false;
+        var sourceSelector = [
+          "pre[data-language='mermaid']",
+          "code[data-language='mermaid']",
+          "figure[data-language='mermaid']",
+          ".astro-code[data-language='mermaid']",
+        ].join(", ");
+
+        function getDiagramSource(node) {
+          var code = node.matches("code") ? node : node.querySelector("code");
+          return (code ? code.textContent : node.textContent) || "";
+        }
 
         async function render() {
           if (typeof mermaid === "undefined") {
@@ -146,25 +157,36 @@ const rssHref = getRelativeLocaleUrl(
             initDone = true;
           }
 
-          // Shiki renders ```mermaid as <pre data-language="mermaid">
-          var pres = document.querySelectorAll("pre[data-language='mermaid']");
-          for (var i = 0; i < pres.length; i++) {
-            var pre = pres[i];
-            if (pre.dataset.mermaidDone) continue;
-            pre.dataset.mermaidDone = "1";
+          // Different Shiki/Astro versions attach the language marker to
+          // different nodes, so we normalize all Mermaid code blocks here.
+          var sources = document.querySelectorAll(sourceSelector);
+          for (var i = 0; i < sources.length; i++) {
+            var source = sources[i];
+            var container =
+              source.closest("figure") || source.closest("pre") || source;
+            if (container.dataset.mermaidDone) continue;
+
+            var definition = getDiagramSource(source).trim();
+            if (!definition) continue;
+
+            container.dataset.mermaidDone = "1";
             var div = document.createElement("div");
             div.className = "mermaid";
-            div.textContent = pre.textContent;
-            pre.parentNode.replaceChild(div, pre);
+            div.textContent = definition;
+            container.parentNode.replaceChild(div, container);
           }
 
           var divs = document.querySelectorAll("div.mermaid:not([data-processed])");
           if (divs.length === 0) return;
-          for (var j = 0; j < divs.length; j++) {
-            divs[j].setAttribute("data-processed", "1");
-          }
 
-          await mermaid.run();
+          try {
+            await mermaid.run();
+          } catch (error) {
+            console.error("Mermaid render failed:", error);
+            for (var j = 0; j < divs.length; j++) {
+              divs[j].removeAttribute("data-processed");
+            }
+          }
         }
 
         document.addEventListener("astro:page-load", render);
