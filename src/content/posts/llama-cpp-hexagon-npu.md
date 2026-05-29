@@ -170,149 +170,47 @@ export ADSP_LIBRARY_PATH=/data/local/tmp/llama.cpp/lib
 ./bin/llama-cli \
   -m /data/local/tmp/gguf/Qwen3.5-4B-Q4_0.gguf \
   --device HTP0 -ngl 99 -t 4 \
-  -n 64 -cnv
+  -fa on \
+  -ctk q8_0 -ctv q8_0 \
+  --batch-size 128 --ctx-size 2048 \
+  -n 128 -cnv
 ```
-
-这几个参数的含义：
 
 | 参数 | 说明 |
 |---|---|
 | `-m` | 模型路径 |
-| `--device HTP0` | 指定设备为 HTP（NPU）。如果模型很大可以用 `HTP0,HTP1` 两个 session |
-| `-ngl 99` | 把所有 layer offload 到设备上。99 是一个"大于任何模型层数"的值，等价于"全部" |
-| `-t 4` | CPU 线程数。CPU 只做 tokenize/decode 调度，不需要太多 |
-| `-n 64` | 最多生成 64 个 token |
+| `--device HTP0` | HTP 设备。大模型可 `HTP0,HTP1` 多 session |
+| `-ngl 99` | 所有 layer offload 到 HTP |
+| `-t 4` | CPU 线程数 |
+| `-fa on` | Flash Attention |
+| `-ctk q8_0 -ctv q8_0` | KV cache 量化，省内存 |
+| `--ctx-size` | context 长度，按需设，默认很大浪费内存 |
+| `-n` | 最大生成 token 数 |
 | `-cnv` | 交互对话模式 |
 
-### 进阶参数
-
-```bash
-./bin/llama-cli \
-  -m /data/local/tmp/gguf/Qwen3.5-4B-Q4_0.gguf \
-  --device HTP0 -ngl 99 -t 4 \
-  -fa on \
-  -ctk q8_0 -ctv q8_0 \
-  --batch-size 128 \
-  --ctx-size 2048 \
-  -n 128 -cnv
-```
-
-几个调优经验：
-
-- **`-fa on`**：Flash Attention。7B 及以上模型建议打开，小模型可能出现负优化，实测为准
-- **`-ctk q8_0 -ctv q8_0`**：KV cache 量化，显著省内存，精度损失极小
-- **`--ctx-size`**：context 长度。默认很大，建议显式设一个合理值避免浪费内存
-- **`--batch-size`**：prompt 阶段的 batch 大小，128 是常用值
-
-### 多模型规模适配
-
-| 模型大小 | HTP session 数 | 参数 |
-|---|---|---|
-| ≤ 7B | 1 | `--device HTP0 -ngl 99` |
-| 8B-13B | 2 | `NDEV=2 --device HTP0,HTP1 -ngl 99` |
-| 20B+ | 4 | `NDEV=4 --device HTP0,HTP1,HTP2,HTP3 -ngl 99` |
-
-## 5. 怎么确认 NPU 真的在工作
-
-最容易踩的坑：命令跑起来了，token 也在吐，但其实全在 CPU 上跑。因为你下载的 GGUF 是 Q4_K_M 不是 Q4_0。
-
-看模型加载日志。正常的 HTP 加载长这样：
+模型加载时看日志确认 NPU 生效：
 
 ```
 ggml-hex: Hexagon Arch version v73
-ggml-hex: allocating new session: HTP0
-ggml-hex: new session: HTP0 : session-id 0 domain-id 3
-load_tensors: offloaded 17/17 layers to GPU       ← 注意这里
-load_tensors:         HTP0 model buffer size =   ... MiB
-load_tensors:  HTP0-REPACK model buffer size =  ... MiB
+load_tensors: offloaded 17/17 layers to GPU       ← 全部走 NPU
 ```
 
-关键信号：`offloaded X/X layers to GPU` —— 如果是 X/X（全部），NPU 在工作。如果是 0/X，检查量化类型。
+如果是 `0/X`，检查量化类型是不是 Q4_K_M。
 
-更细粒度的调试：
+## 性能
 
-```bash
-# Op 级别打日志
-GGML_HEXAGON_VERBOSE=1 ./bin/llama-cli ... 2>&1 | head -50
-
-# 禁用特定 op 走 NPU（排查用）
-GGML_HEXAGON_OPFILTER="FLASH_ATTN_EXT" ./bin/llama-cli ...
-
-# 性能 profiling
-GGML_HEXAGON_PROFILE=1 ./bin/llama-cli ...
-```
-
-环境变量速查：
-
-| 变量 | 说明 |
-|---|---|
-| `GGML_HEXAGON_VERBOSE=1` | 打印每个 op 的执行路径 |
-| `GGML_HEXAGON_PROFILE=1` | op 级别耗时统计 |
-| `GGML_HEXAGON_OPFILTER` | 强制指定 op fallback 到 CPU |
-| `GGML_HEXAGON_NDEV` | HTP session 数量 |
-
-## 6. 性能参考
-
-实测（kalama / Snapdragon 8 Gen 2 / v73）：
+实测（Snapdragon 8 Gen 2 / v73）：Qwen3.5-4B Q4_0，prompt 13.2 t/s，generation 7.4 t/s。约 CPU 的 2-3x。
 
 | 模型 | 量化 | Prompt | Generation |
 |---|---|---|---|
 | Qwen3.5-4B | Q4_0 | 13.2 t/s | 7.4 t/s |
-
-Generation 速度 7.4 t/s 是什么概念？同一个模型在骁龙 8 Gen 2 的 CPU 上跑，大概 2-3 t/s。HTP 带来了 2-3x 的加速。而且功耗更低——NPU 的能效比远高于 CPU 和 GPU。
-
-官方在 v79 架构上的参考数据：
-
-| 模型 | 量化 | Prompt | Generation |
-|---|---|---|---|
 | Llama-3.2-1B | Q4_0 | 136 t/s | 51.5 t/s |
-| OLMoE-1B-7B | Q4_0 | 122.5 t/s | 45.7 t/s |
 
-小模型的吞吐已经很可观了。1B 规模 50+ t/s 的 generation 速度，实时对话完全够用。
+## 几个要点
 
-## 7. 常见问题
+1. **量化选 Q4_0 不选 Q4_K_M**——Q4_K_M 没有 HTP kernel，全走 CPU
+2. **ctx-size 不要用默认值**——显式设 `--ctx-size 2048`，大了浪费内存
+3. **开 KV cache 量化**：`-ctk q8_0 -ctv q8_0`，精度损失极小
+4. **OOM 优先缩 ctx-size**：`--ctx-size 1024` 效果最明显
+5. **`GGML_HEXAGON_VERBOSE=1`** 看哪些 op 走了 CPU
 
-### generation 速度低于预期
-
-先排查三个最常见的原因：
-
-1. **量化类型不对**——这是排名第一的坑。确认 GGUF 是 Q4_0 不是 Q4_K_M
-2. **不是全部 layer 走了 HTP**——看加载日志确认 `offloaded X/X`
-3. **ctx-size 太大**——默认值可能很大，显式设 `--ctx-size 2048`
-
-然后可以尝试：
-
-- 关掉 flash attention：去掉 `-fa`（小模型可能负优化）
-- 关掉 kv cache 量化：去掉 `-ctk -ctv`
-
-### 加载时 OOM
-
-顺序尝试：
-
-```bash
-# 1. 缩小 context 窗口（效果最明显）
---ctx-size 1024
-
-# 2. KV cache 量化
--ctk q8_0 -ctv q8_0
-
-# 3. 换更小的模型
-```
-
-### 某些 op 走不了 NPU
-
-不是所有 op 都有 HTP kernel。当前支持的算子主要是 `MUL_MAT`（矩阵乘）、`FLASH_ATTN_EXT`、`RCP`（RMS Norm 等）。如果遇到不支持的 op，会静默 fallback 到 CPU。
-
-可以开 `GGML_HEXAGON_VERBOSE=1` 看具体哪些 op 走了 CPU。
-
-## 总结
-
-llama.cpp + Hexagon NPU 的关键点：
-
-1. **量化选 Q4_0，不要选 Q4_K_M**。这是最高频的错误。
-2. **交叉编译用 Docker 工具链**，别自己手动配 Hexagon SDK。
-3. **跑起来后先看日志**确认 `offloaded X/X layers`。
-4. **用 `-ctk q8_0 -ctv q8_0` 省内存**，副作用极小。
-5. **ctx-size 不要用默认值**，按需设 2048 或更小。
-
-整个流程走通后，一部手机就能本地跑 4B-7B 的对话模型。
