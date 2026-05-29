@@ -134,16 +134,41 @@ const rssHref = getRelativeLocaleUrl(
     </script>
     <script is:inline>
       (function () {
-        function init() {
-          if (typeof mermaid === "undefined") return;
-          document.querySelectorAll("div.mermaid").forEach((el) => {
-            if (el.getAttribute("data-processed")) return;
-            el.setAttribute("data-processed", "true");
+        let mermaidReady = false;
+
+        function render() {
+          if (typeof mermaid === "undefined") {
+            setTimeout(render, 100);
+            return;
+          }
+          if (!mermaidReady) {
+            mermaid.initialize({ startOnLoad: false, theme: "base" });
+            mermaidReady = true;
+          }
+          // Convert any code.language-mermaid blocks to div.mermaid
+          document.querySelectorAll("code.language-mermaid").forEach(function (code) {
+            var pre = code.closest("pre") || code.parentElement;
+            if (!pre || pre.dataset.mermaidDone) return;
+            pre.dataset.mermaidDone = "1";
+            var div = document.createElement("div");
+            div.className = "mermaid";
+            div.textContent = code.textContent || "";
+            pre.parentElement.replaceChild(div, pre);
           });
-          mermaid.initialize({ startOnLoad: true, theme: "base" });
+          // Render all div.mermaid (existing + newly created)
+          document.querySelectorAll("div.mermaid").forEach(function (el) {
+            if (el.dataset.mermaidDone) return;
+            el.dataset.mermaidDone = "1";
+          });
+          mermaid.run({ querySelector: "div.mermaid" });
         }
-        document.addEventListener("astro:page-load", init);
-        document.addEventListener("DOMContentLoaded", init);
+
+        document.addEventListener("astro:page-load", render);
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", render);
+        } else {
+          render();
+        }
       })();
     </script>
   </body>

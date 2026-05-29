@@ -15,25 +15,6 @@ import {
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import config from "./astro-paper.config";
 
-/** remark plugin: convert ```mermaid code blocks to <div class="mermaid"> */
-function remarkMermaid() {
-  function walk(node: any) {
-    if (!node || !node.children) return;
-    for (let i = 0; i < node.children.length; i++) {
-      const child = node.children[i];
-      if (child.type === "code" && child.lang === "mermaid") {
-        node.children[i] = {
-          type: "html",
-          value: `<div class="mermaid">\n${child.value}\n</div>`,
-        };
-      } else {
-        walk(child);
-      }
-    }
-  }
-  return walk;
-}
-
 export default defineConfig({
   site: config.site.url,
   base: '/blog',
@@ -52,7 +33,7 @@ export default defineConfig({
     },
   },
   markdown: {
-    remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }], remarkMermaid],
+    remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
     shikiConfig: {
       themes: { light: "min-light", dark: "night-owl" },
       defaultColor: false,
