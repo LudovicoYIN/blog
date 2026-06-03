@@ -1,7 +1,7 @@
 ---
 author: Ludovico
 pubDatetime: 2026-05-30T00:00:00Z
-title: llama.cpp Hexagon NPU 量化方法深度解析
+title: llama.cpp Hexagon NPU 量化：Q4_0 / IQ4_NL / MXFP4 / Q8_0
 featured: true
 draft: false
 tags:
