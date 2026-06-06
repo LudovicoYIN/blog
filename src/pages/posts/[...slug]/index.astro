@@ -152,12 +152,18 @@ const ogImage = ogImageUrl
       {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />)}
     </ul>
 
-    <!-- 不蒜子 page views -->
-    <p class="mt-2 mb-6 text-sm text-muted-foreground">
+    <!-- 不蒜子 counters -->
+    <div class="mt-2 mb-6 flex flex-wrap gap-4 text-sm text-muted-foreground">
       <span id="busuanzi_container_page_pv">
-        👁️ 阅读量：<span id="busuanzi_value_page_pv"></span>
+        📄 本文阅读：<span id="busuanzi_value_page_pv"></span>
       </span>
-    </p>
+      <span id="busuanzi_container_site_pv">
+        🌐 全站总览：<span id="busuanzi_value_site_pv"></span>
+      </span>
+      <span id="busuanzi_container_site_uv">
+        👥 访客总数：<span id="busuanzi_value_site_uv"></span>
+      </span>
+    </div>
 
     <ShareLinks />
 
