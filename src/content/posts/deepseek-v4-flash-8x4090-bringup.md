@@ -1,22 +1,24 @@
 ---
 author: Ludovico
 pubDatetime: 2026-06-15T08:00:00Z
-title: DeepSeek-V4-Flash 在 8x RTX 4090 上的 bring-up 记录
+title: 在 8x4090 上硬跑 DeepSeek-V4-Flash 的踩坑随记
 featured: true
 draft: false
 tags:
   - 大模型推理
   - vLLM
-description: 把 DeepSeek-V4-Flash 在 8x4090/SM89 上从"服务能启动"推到"首请求返回 200"，记录了每一类补丁的含义、故障消除顺序和官方 benchmark 结果。
+description: 本来想看看 4090 能不能凑合跑 DeepSeek-V4-Flash，跑是跑通了，但离"能用"还很远。一篇随记。
 ---
 
-目标：在 8x NVIDIA RTX 4090（SM89 / Ada）上，通过 `vllm.entrypoints.openai.api_server` 跑通 `DeepSeek-V4-Flash`，不是只启动服务，而是 `/v1/chat/completions` 真正返回正确结果。
+本来想的是：8 张 4090 加起来 192G 显存，FP8 量化一下，跑个 DeepSeek-V4-Flash 应该勉强能玩吧。结果是跑通了，但也只是"跑通了"。
 
-最终状态：服务启动成功，最小请求返回 `OK`，官方短请求、多轮、`4096/8192/16384` 长上下文均已验证通过。
+最小请求能返回 `OK`，官方 benchmark 脚本能过。但你要说能不能拿来干什么——首 token 等 40 秒，输出每秒 2 token，就算并发拉满也只是在排队，根本没意义。
 
-## 最终可工作的配置
+写这篇不为别的，就是记录一下从"服务都起不来"到"能吐字"中间踩了哪些坑，以及为什么最后结论是：**4090 跑 DeepSeek-V4 不具备实用性**。
 
-环境变量：
+## 能跑的配置
+
+环境变量 + 启动参数贴在这里，省得以后忘：
 
 ```bash
 export PYTORCH_CUDA_ALLOC_CONF='expandable_segments:True,max_split_size_mb:512'
@@ -24,11 +26,7 @@ export VLLM_ALLOW_LONG_MAX_MODEL_LEN=1
 export VLLM_ENGINE_ITERATION_TIMEOUT_S=600
 export VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=1
 export NVIDIA_TF32_OVERRIDE=0
-```
 
-启动命令：
-
-```bash
 python -m vllm.entrypoints.openai.api_server \
   --model /home/q/models/deepseek-ai/DeepSeek-V4-Flash \
   --served-model-name DeepSeek-V4-Flash \
@@ -47,178 +45,67 @@ python -m vllm.entrypoints.openai.api_server \
   -O1
 ```
 
-验证请求：
+`cpu-offload-gb 14.81` 是个精确数字，少一点直接 OOM。基本是把 4090 显存吃满之后往外溢出的量。
 
-```bash
-curl -sS http://127.0.0.1:8000/v1/chat/completions \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "model": "DeepSeek-V4-Flash",
-    "messages": [{"role": "user", "content": "你好，请只回复OK。"}],
-    "max_tokens": 8,
-    "temperature": 0
-  }'
-# → {"choices":[{"message":{"content":"OK"}}]}
-```
+## 为什么一开始连启动都费劲
 
-## 为什么一开始跑不起来
+DeepSeek-V4 的代码假设你有一台 Hopper 机器。4090 是 Ada/SM89，跟这个假设在三个地方撞墙：
 
-问题不是单点故障，而是多层叠加。
+1. **nvcc 不支持 `sm_89`**。本机的 `/usr/bin/nvcc` 编不了 `-arch=sm_89`，任何跑着跑着突然 JIT 一段 CUDA kernel 的路径全炸。
+2. **高性能路径默认走 Hopper-only 实现**。FP8 block-scaled linear、FlashMLA、MHC、FlashInfer sampler……这些默认 kernel 跟你 4090 没关系。
+3. **错误不发生在启动阶段**。模型加载完、服务 started 日志打出来都是正常的，真正炸的是第一个请求走到 decode/sampling/sparse attention 的时候。
 
-### 启动参数层
+所以好几次我以为是"快成功了"，结果换一个请求长度又崩了。
 
-两个非内核问题让排查方向跑偏：
+## 修了什么
 
-1. `python -m vllm.entrypoints.openai.api_server` 不会把位置参数自动当成 `--model`，服务可能悄悄回落到默认模型。
-2. `-O.mode=PIECEWISE` 不是合法写法，需要用 `-O1` 或显式传 `--compilation-config`。
+策略就一条：**不硬开 4090 不支持的优化，把走不通的路径全部降级到 PyTorch reference 或 Triton fallback。**
 
-### 4090 / SM89 与主线内核不匹配
+改了大概 8 类补丁，涉及 vLLM 主线十几个文件。每个都是"不改就跑不过去"——
 
-`DeepSeek-V4-Flash` 不是单一路径的纯 FP8 模型。Dense/attention 一部分是 FP8 block-scaled，MoE/compressor/KV cache/稀疏解码又会牵出 Triton、TileLang、FlashMLA、FlashInfer、cutedsl、DeepGEMM 等多条路径。
+**编译配置**：`CompilationConfig` 里缺 `encoder_compilation_time` 字段导致启动期就报错；SM89 上 cudagraph 在 `nonzero()`、boolean mask、`copy_()` 这些位置需要 PIECEWISE 切图，不然 graph capture 直接挂。
 
-在 4090 上，三个核心矛盾：
+**FP8 block-scaled linear**：这是第一个请求就炸的地方。4090 没有 Hopper 的 FP8 硬件路径，Triton 路径里 `float8_e8m0fnu` 类型也不存在。补了一个纯 PyTorch reference 的 emulation kernel，准确但不快。
 
-1. 设备是 SM89，不是 Hopper/SM90。
-2. 本机 `/usr/bin/nvcc` 不支持 `-arch=sm_89`，任何运行期 JIT 到 nvcc 的路径直接失败。
-3. 主线 DeepSeek-V4 高性能实现默认偏向 Hopper/Blackwell，或假设本机可以即时编译 CUDA 内核。
+**FlashMLA / 稀疏 attention**：原生 `_flashmla_C` 不可用，稀疏 decode 的索引计算 (`compute_swa_indices_and_lens` 等) 和 KV cache dequantize + gather 也要补 SM89 fallback。这部分补完，长上下文才不崩。
 
-所以"服务启动成功"不等于"首请求成功"——大量错误在第一次真实 decode/sampling/sparse attention/MHC 路径上才暴露。
+**Compressor / indexer / KV cache 写入流水线**：这链路依赖 cutedsl 做 fused indexer，4090 上只能用 Python reference 替掉。补了一整套 compressor → RMSNorm → RoPE → FP8 quant → KV cache write 的 fallback。
 
-## 补丁策略
+**MHC（Multi-Head Compression）**：整件事里最折腾的一个。MHC 路径在首请求时触发 TileLang/TVM 编译，编译命令直接调 `nvcc --cubin -arch=sm_89`，worker 当场去世，返回 HTTP 500。补了 `mhc_pre`、`mhc_post`、`mhc_fused_post_pre`、`hc_head` 全部 reference 实现，再把 fused-with-norm 的 TileLang 路径拆成 reference MHC + Python RMSNorm。
 
-不是硬把 4090 伪装成 Hopper，也不是强行开启不支持的 JIT。策略是：
+**FlashInfer sampler 禁用**：SM89 上 FlashInfer 做本地 JIT 还是会碰到 `sm_89` 工具链问题，直接标记 unsupported 回退到 native sampler。
 
-1. 修启动参数和兼容字段。
-2. 对 Hopper-only 或会触发 `nvcc -arch=sm_89` 运行期编译的路径，显式绕开。
-3. 尽量复用仓库里已有的 PyTorch/Triton/reference 实现。
-4. 必要时补本地 reference/emulation/Triton fallback，只覆盖真正挡路的切片。
+修完这些之后，终于拿到了第一个 `{"choices":[{"message":{"content":"OK"}}]}`。
 
-即"把不兼容路径有控制地降级到可运行路径"，不是"打开更多优化"。
+## 跑起来之后的性能
 
-## 补丁分组
+注意：`--max-num-seqs 1` 意味着一口气只能处理一个请求，benchmark 里的"并发"实际上是排队。
 
-### 1. 启动与编译配置兼容
+短请求（128 in / 32 out）：
 
-`vllm/config/compilation.py`、`vllm/compilation/backends.py`：
+| 并发 | 吞吐 | Mean TTFT | Mean TPOT |
+| --- | --- | --- | --- |
+| 1 | 2.04 tok/s | 0.96s | 476ms |
+| 2 | 2.05 tok/s | 12.66s | 475ms |
 
-- 恢复 `encoder_compilation_time` 字段，避免启动期统计访问缺字段报错。
-- 把 SM89 reference 自定义算子加入 `CompilationConfig._attention_ops`，让 PIECEWISE cudagraph 在 `.nonzero()`、布尔 mask、`copy_()` 等不适合完整图捕获的位置切图。
+并发 2 的时候 TTFT 直接从 1s 飙到 12.7s —— 因为根本不能并行，第二个请求纯在排队。
 
-### 2. 统一 reference 开关
+长上下文：
 
-`vllm/utils/deep_gemm.py`：
+| 输入长度 | Mean TTFT | Mean TPOT |
+| --- | --- | --- |
+| 4096 | 39s | 492ms |
+| 8192 | 41s | 488ms |
+| 16384 | 114s | 477ms |
 
-- 新增 `_use_sm86_reference()`，统一承载 `SM < 90` 的降级判断。
-- 在 Ampere/Ada 上优先选择 reference/fallback 路径。
-- 留环境变量 `VLLM_SM86_DEEPSEEK_V4_REF` 做强制开关。
+16384 长度的首 token 等将近两分钟。这还算能跑通的，32k 直接 `400 Bad Request`，虽然不 OOM 但就是拒绝服务。
 
-### 3. FP8 block-scaled linear 降级
+多轮对话倒是全过了，4 轮 × 4 请求，平均 TTFT 1.16s。但受限 `max-num-seqs 1`，实际还是串行。
 
-`vllm/model_executor/kernels/linear/scaled_mm/emulation.py`、`.../linear/__init__.py`、`.../quantization/utils/fp8_utils.py`、`.../scaled_mm/triton.py`：
+核心问题不是显存——engine 日志显示 KV cache 容量有 1,272,663 tokens，理论上能撑 38 路 32k。问题是 reference/fallback 路径太慢了，而且并发等于排队，**这机器连"凑合用"的标准都够不上**。
 
-- 新增 `EmulationFp8BlockScaledMMKernel`，PyTorch reference 纯软件 fallback。
-- SM89 reference 模式下强制 `Fp8LinearMethod` 选 emulation kernel。
-- 修正 Triton 环境中 `float8_e8m0fnu` 不存在的问题，以及 SM<89 上 FP8 Triton 路径不该下发的问题。
+## 结论
 
-### 4. FlashMLA 与稀疏解码 fallback
+如果你看到这篇文章在想"4090 是不是也能跑 DeepSeek-V4"——能跑，但只限于能跑。输出 2 token/s 的速度，首 token 等半分钟到两分钟，除非你想拿来当打字机的怀旧体验，否则没什么实用价值。
 
-`vllm/v1/attention/ops/flashmla.py`、`vllm/third_party/flashmla/`、`vllm/utils/fp8_paged_mqa_logits_sm86.py`：
-
-- 原生 `_flashmla_C` 不可用时，SM8x 走 Python/Triton fallback。
-- 提供 SM8x 稀疏 decode Triton 核和 paged MQA logits Triton 核。
-- 保留 DeepSeek-V4 稀疏 decode 的算法形状，但用 4090 能承受的实现替掉不兼容主线 kernel。
-
-### 5. 稀疏元数据、KV gather、partial states reference 化
-
-`vllm/v1/attention/backends/mla/sparse_swa.py`、`vllm/models/deepseek_v4/common/ops/cache_utils.py`、`vllm/v1/attention/ops/deepseek_v4_ops/cache_utils.py`、`.../save_partial_states.py`：
-
-- `compute_swa_indices_and_lens`、`compute_global_topk_indices_and_lens` 增加 Python reference 路径。
-- `dequantize_and_gather_k_cache` 增加 SM89 fallback，SM89 上禁用 cutedsl。
-- `save_partial_states` 增加 reference 实现。
-
-### 6. Compressor / indexer / quant cache fallback
-
-`vllm/models/deepseek_v4/compressor.py`、`vllm/model_executor/layers/deepseek_compressor.py`、`vllm/v1/attention/ops/deepseek_v4_ops/`：
-
-- head_dim=128 和 head_dim=512 的 compressor 路径分别接入 SM89 pyref/fallback。
-- SM89 上关闭依赖 cutedsl 的 fused indexer。
-- 新增 `deepseek_v4_ops` 目录，放置压缩→RMSNorm→RoPE→FP8 quant→KV cache 写入整条流水线的 fallback。
-
-### 7. MHC / TileLang 绕行（首请求 500 的最后一根刺）
-
-`vllm/model_executor/kernels/mhc/tilelang.py`、`vllm/model_executor/layers/mhc.py`、`vllm/models/deepseek_v4/nvidia/model.py`：
-
-- MHC 路径在首请求时触发 TileLang/TVM 编译，编译命令调用 `nvcc --cubin -arch=sm_89`，本机 nvcc 不支持，worker 直接崩。
-- 补齐 `mhc_pre`、`mhc_post`、`mhc_fused_post_pre`、`hc_head` 的 reference 实现。
-- `norm_weight` 存在时，新增 `_rms_norm_bf16()`，把 fused-with-norm 的 TileLang 路径拆成 reference MHC + Python 侧 RMSNorm。
-
-### 8. FlashInfer sampler 禁用 JIT
-
-`vllm/v1/sample/ops/topk_topp_sampler.py`：
-
-- SM89 上 FlashInfer sampler 做本地 JIT 仍会碰到 `sm_89` nvcc 工具链问题。
-- 标记为 unsupported，回退到 native sampler。
-
-## 故障消除顺序
-
-1. 修启动参数与 `CompilationConfig` → 服务能稳定用目标模型启动。
-2. 修 FP8 block-scaled linear kernel 选择 → 不死在不支持的 FP8 backend。
-3. 补 FlashMLA / 稀疏 helper / compressor / indexer SM89 fallback → attention 和 KV cache 流程走通。
-4. 禁用 FlashInfer sampler JIT → 请求尾部不再炸。
-5. 修 MHC TileLang 请求期 JIT → 首请求从 500 变 200。
-
-## 官方 Benchmark 结果
-
-测试全部使用仓库自带官方脚本（`vllm.entrypoints.cli.main bench serve` 和 `benchmarks/multi_turn/benchmark_serving_multi_turn.py`），非手写压测。
-
-注意：当前 `--max-num-seqs 1`，并发 > 1 时体现的是排队和 TTFT 恶化，不是引擎真正并行执行。
-
-### 显存与 KV cache
-
-启动后 engine 日志：
-
-- GPU KV cache size: 1,272,663 tokens
-- Maximum concurrency for 32,768 tokens per request: 38.84x
-
-理论容量大，但 `--max-num-seqs 1` + fallback 路径，不等价于可稳定支撑 38 路 32k。
-
-### 短请求吞吐
-
-128 in / 32 out：
-
-| 并发 | 成功/失败 | 总时长 | 请求吞吐 | 输出吞吐 | Mean TTFT | Mean TPOT |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 | 4/0 | 62.87s | 0.064 req/s | 2.04 tok/s | 963ms | 476ms |
-| 2 | 4/0 | 62.59s | 0.064 req/s | 2.05 tok/s | 12656ms | 475ms |
-
-并发 2 时 TTFT 从 0.96s 升到 12.66s，说明基本只是客户端排队。TPOT 稳定在 ~475ms/token。
-
-### 长上下文
-
-经过两轮修复（FlashMLA sparse prefill 分块化、MQA logits reference 分块化）后的结果：
-
-| 输入长度 | 成功/失败 | 总时长 | Mean TTFT | Mean TPOT |
-| --- | --- | --- | --- | --- |
-| 4096 | 1/0 | 46.51s | 39126ms | 492ms |
-| 8192 | 1/0 | 48.51s | 41191ms | 488ms |
-| 16384 | 1/0 | 121.13s | 113977ms | 477ms |
-
-`32768 in / 16 out` 不触发 OOM，但被 API 层以 `400 Bad Request` 拒绝，服务在请求后仍健康。
-
-### 多轮对话
-
-`num_clients=1, max_active_conversations=1, max_num_requests=4, max_turns=4`：
-
-- 4/0 全部成功，benchmark runtime 58.96s
-- mean ttft 1162ms, mean tpot 498ms, mean latency 14734ms
-- mean input 315 tokens, mean output 29 tokens
-
-短上下文多轮功能正确，但受 `--max-num-seqs 1` 限制，本质仍是单路串行。
-
-## 当前边界
-
-1. 大量路径是 reference/fallback/emulation，正确性优先于性能。
-2. 短请求和保守多轮已验证可用，但并发提升不线性带来吞吐提升。
-3. 长上下文已验证到 16384；32k 当前被 API 拒绝，不能直接宣称可用。
-4. 本机 nvcc 仍不支持 `sm_89`，任何新的运行期 JIT 路径理论上仍可能踩雷。
-
+这更像是一次"把不兼容的硬件硬拉到能吐字的程度"的练习。实际用的话，还是等官方出更轻量的量化版本，或者直接上 Hopper。
