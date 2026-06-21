@@ -107,6 +107,15 @@ const rssHref = getRelativeLocaleUrl(
 
     <ClientRouter />
 
+    <!-- KaTeX for LaTeX math -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+      is:inline
+    ></script>
     <!-- Mermaid -->
     <style is:global>
       div.mermaid {
