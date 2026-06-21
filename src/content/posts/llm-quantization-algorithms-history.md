@@ -1,7 +1,7 @@
 ---
 author: Ludovico
 pubDatetime: 2026-06-21T12:00:00Z
-title: LLM 量化算法全解：从 INT8 到 1-bit
+title: 量化算法时间线
 featured: true
 draft: false
 tags:
@@ -10,8 +10,11 @@ tags:
   - GPTQ
   - AWQ
   - SmoothQuant
+  - OmniQuant
+  - QuIP
+  - QLoRA
   - 系统优化
-description: 从 2017 年 CNN 量化到 2026 年 1-bit LLM，梳理量化算法发展脉络，覆盖 PTQ、QAT、GPTQ、AWQ、SmoothQuant 等核心算法的原理与实践对比。
+description: 从 2017 年 CNN 量化到 2026 年 1-bit LLM，梳理量化算法发展脉络，覆盖 PTQ、QAT、GPTQ、AWQ、SmoothQuant、OmniQuant、QuIP、QLoRA 等核心算法的原理与实践对比。
 ---
 
 ## 量化是什么
@@ -38,7 +41,7 @@ $$W_{quantized} = \text{round}\left(\frac{W_{fp32}}{s} + z\right)$$
 
 ```mermaid
 timeline
-    title LLM 量化发展时间线
+    title 量化算法发展时间线
     2017 : Learnable Quantization<br>(Courbariaux et al.)
           : 首次提出可学习量化
     2018 : QAT (Quantization-Aware Training)<br>(Jacob et al.)
@@ -57,12 +60,14 @@ timeline
           : 激活值量化突破
     2023 : AWQ (Lin et al.)
           : 激活感知权重量化
-          : SpaQ (Zhang et al.)
-          : 量化 + 稀疏结合
+          : OmniQuant (Shao et al.)
+          : 全方位校准量化
           : QuIP (Lee et al.)
           : 最优传输理论量化
-    2024 : QoQ (Dettmers et al.)
+    2024 : QLoRA (Dettmers et al.)
           : 量化 LoRA 微调
+          : QuIP# (Tseng et al.)
+          : Hadamard 非相干处理
           : FP8 训练 (Microsoft)
           : 硬件原生 FP8 支持
     2025 : 1-bit LLM (Wang et al.)
@@ -285,37 +290,163 @@ def smooth_quant(W, A, alpha=0.5):
 - 支持 INT8 激活值 + INT8 权重
 - 推理速度提升 2-4x
 
-### 7. 其他算法
+### 7. OmniQuant
 
-**SpaQ（Sparse Quantization）**：
+2023 年提出，全方位校准量化算法。
 
-- 量化 + 稀疏结合
-- 先稀疏化，再量化
-- 压缩比可达 16x
+**核心洞察**：
 
-**QuIP（Quantization with Optimal Transportation）**：
+- 现有量化方法只关注权重或激活值之一
+- OmniQuant 同时优化权重和激活值的量化参数
+- 通过可微优化框架统一处理
 
-- 最优传输理论指导量化
-- 理论上保证量化误差最小
-- 支持 INT2、INT1
+**算法流程**：
 
-**QoQ（Quantized LoRA）**：
+```mermaid
+graph TD
+    A[加载 FP16 模型] --> B[块级校准]
+    B --> C[学习量化参数]
+    C --> D[优化 scale/zero_point]
+    D --> E[量化权重和激活值]
+    E --> F[INT4 模型]
+```
 
-- 量化模型 + LoRA 微调
-- 无需解冻全量权重
-- 微调显存占用降低 10x
+**数学原理**：
 
-## 量化格式对比
+$$\min_{s, z} \mathbb{E}_{x} \|\mathcal{Q}(W, s, z) x - W x\|_2^2$$
 
-| 格式 | 精度 | 压缩比 | 推理速度 | 适用硬件 |
-|------|------|--------|---------|---------|
-| FP16 | 16-bit | 1x | 基准 | GPU |
-| BF16 | 16-bit | 1x | 基准 | GPU/TPU |
-| FP8 | 8-bit | 2x | 2-4x | GPU (H100+) |
-| INT8 | 8-bit | 2x | 2-4x | CPU/GPU/NPU |
-| INT4 | 4-bit | 4x | 4-8x | CPU/GPU/NPU |
-| INT2 | 2-bit | 8x | 8-16x | CPU/GPU |
-| INT1 | 1-bit | 16x | 16-32x | CPU/GPU |
+其中 $\mathcal{Q}$ 是量化函数，$s$ 和 $z$ 是可学习的量化参数。
+
+**关键特点**：
+
+- **全方位校准**：同时优化权重和激活值
+- **可微优化**：通过梯度下降学习量化参数
+- **支持 W4A16/W4A4**：权重 4-bit，激活值 16-bit 或 4-bit
+
+**OmniQuant vs AWQ 对比**：
+
+| 维度 | AWQ | OmniQuant |
+|------|-----|-----------|
+| 优化目标 | 权重 | 权重 + 激活值 |
+| 优化方法 | 启发式缩放 | 可微优化 |
+| 量化精度 | INT4 | INT4/INT2 |
+| 计算复杂度 | 低 | 中 |
+| 适用场景 | 快速部署 | 精度敏感 |
+
+### 8. QuIP / QuIP#
+
+**QuIP（2023）**：最优传输理论量化。
+
+**核心思想**：
+
+将量化问题建模为最优传输问题，理论上保证量化误差最小。
+
+**数学原理**：
+
+$$\min_{W_q} \mathbb{W}_2(W, W_q)$$
+
+其中 $\mathbb{W}_2$ 是 Wasserstein-2 距离。
+
+**关键特点**：
+
+- **理论保证**：最优传输理论保证误差最小
+- **支持 INT2**：可将权重压缩到 2-bit
+- **Incoherence Processing**：非相干处理减少 outlier
+
+**QuIP#（2024）**：Hadamard 非相干处理。
+
+**核心改进**：
+
+- 使用 Hadamard 矩阵进行非相干处理
+- 进一步减少量化误差
+- 支持 INT1（1-bit）量化
+
+**QuIP vs QuIP# 对比**：
+
+| 维度 | QuIP | QuIP# |
+|------|------|-------|
+| 非相干处理 | 随机旋转 | Hadamard 矩阵 |
+| 量化精度 | INT2 | INT1/INT2 |
+| 计算复杂度 | 中 | 低 |
+| 精度损失 | 2-3% | 1-2% |
+
+### 9. QLoRA
+
+2023 年提出，量化 LoRA 微调。
+
+**核心问题**：
+
+- 全量微调需要大量显存
+- LoRA 减少了参数量，但基座模型仍需 FP16
+
+**解决方案**：
+
+```mermaid
+graph TD
+    A[FP16 预训练模型] --> B[4-bit NormalFloat 量化]
+    B --> C[双量化存储 scale]
+    C --> D[冻结量化权重]
+    D --> E[插入 LoRA 适配器]
+    E --> F[仅训练 LoRA 参数]
+    F --> G[反量化 + LoRA 输出]
+```
+
+**关键创新**：
+
+1. **4-bit NormalFloat**：非均匀量化，适应权重分布
+2. **双量化**：scale 也量化，进一步减少显存
+3. **梯度反量化**：反向传播时反量化权重
+
+**效果**：
+
+- LLaMA-65B 微调显存从 130GB 降至 24GB
+- 单张 48GB GPU 可微调 65B 模型
+- 精度损失 <1%
+
+**QLoRA vs LoRA 对比**：
+
+| 维度 | LoRA | QLoRA |
+|------|------|-------|
+| 基座模型精度 | FP16 | 4-bit |
+| 微调显存 | 高 | 低 |
+| 精度损失 | 0 | <1% |
+| 适用场景 | 资源充足 | 资源受限 |
+
+### 10. FP8 量化
+
+2024 年提出，硬件原生 FP8 支持。
+
+**核心问题**：
+
+- INT8 量化需要反量化，增加计算开销
+- FP8 可以直接在硬件上计算
+
+**FP8 格式**：
+
+- **E4M3**：4-bit 指数 + 3-bit 尾数，范围更大
+- **E5M2**：5-bit 指数 + 2-bit 尾数，精度更高
+
+**效果**：
+
+- H100 GPU 原生支持 FP8 matmul
+- 推理速度提升 2x
+- 精度损失 <1%
+
+## 量化算法对比总览
+
+| 算法 | 年份 | 量化精度 | 优化方法 | 计算复杂度 | 适用场景 |
+|------|------|---------|---------|-----------|---------|
+| PTQ | 2017 | INT8 | MinMax | 低 | 快速部署 |
+| QAT | 2018 | INT8 | 训练模拟 | 高 | 精度敏感 |
+| LLM.int8() | 2022 | INT8 | Outlier 保护 | 中 | 大模型 INT8 |
+| GPTQ | 2022 | INT4 | Hessian 优化 | 高 | 极致压缩 |
+| SmoothQuant | 2022 | INT8 | 激活值平滑 | 中 | 激活值量化 |
+| AWQ | 2023 | INT4 | 激活感知缩放 | 低 | 平衡精度与速度 |
+| OmniQuant | 2023 | INT4 | 可微优化 | 中 | 精度敏感 |
+| QuIP | 2023 | INT2 | 最优传输 | 中 | 极端压缩 |
+| QuIP# | 2024 | INT1 | Hadamard 非相干 | 低 | 极致压缩 |
+| QLoRA | 2023 | 4-bit | LoRA 微调 | 中 | 量化微调 |
+| FP8 | 2024 | FP8 | 硬件原生 | 低 | GPU 推理 |
 
 ## 实践建议
 
@@ -324,8 +455,8 @@ def smooth_quant(W, A, alpha=0.5):
 ```mermaid
 graph TD
     A[需要量化吗？] -->|是| B[精度要求？]
-    B -->|高| C[QAT 或 AWQ]
-    B -->|中| D[GPTQ 或 SmoothQuant]
+    B -->|高| C[QAT 或 OmniQuant]
+    B -->|中| D[GPTQ 或 AWQ]
     B -->|低| E[PTQ INT8]
     C --> F[显存足够？]
     F -->|是| G[INT4]
@@ -343,8 +474,9 @@ graph TD
 | 服务器部署 | FP8/INT8 | 硬件支持好，精度损失小 |
 | 边缘设备 | INT4 GPTQ/AWQ | 压缩比高，推理速度快 |
 | 移动端 | INT4 AWQ | 激活感知，精度高 |
-| 极致压缩 | INT2/INT1 | 压缩比 8-16x |
+| 极致压缩 | INT2 QuIP/INT1 QuIP# | 压缩比 8-16x |
 | 快速部署 | PTQ INT8 | 无需重新训练 |
+| 量化微调 | QLoRA | 单卡微调大模型 |
 
 ## 总结
 
@@ -354,15 +486,17 @@ graph TD
 
 1. **低位量化成为常态**：INT4 已成为边缘设备标准
 2. **激活值量化突破**：SmoothQuant 解决了激活值 outlier 问题
-3. **量化 + 稀疏结合**：SpaQ 等算法同时利用两种压缩方式
-4. **硬件原生支持**：FP8、INT4 成为 GPU/NPU 标准格式
-5. **量化微调兴起**：QoQ 让量化模型也能高效微调
+3. **全方位校准**：OmniQuant 同时优化权重和激活值
+4. **量化 + 微调**：QLoRA 让量化模型也能高效微调
+5. **硬件原生支持**：FP8、INT4 成为 GPU/NPU 标准格式
+6. **极端压缩**：QuIP/QuIP# 支持 INT2/INT1 量化
 
 **实践原则**：
 
-- 精度优先 → QAT/AWQ
+- 精度优先 → QAT/OmniQuant
 - 速度优先 → PTQ INT8
-- 压缩优先 → GPTQ INT4
+- 压缩优先 → GPTQ/QuIP INT4
 - 平衡 → AWQ INT4
+- 微调 → QLoRA
 
 量化不是银弹，但选对算法能让模型部署成本降低一个数量级。
