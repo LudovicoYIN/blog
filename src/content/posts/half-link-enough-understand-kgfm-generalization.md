@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T14:15:00Z
 title: "[论文精读] Half a Link can Be Enough: 知识图谱基础模型的零样本泛化机制"
 featured: false
 draft: false
-tags: [论文精读, 零样本泛化]
+tags:
   - 论文精读
   - 零样本泛化
   - 知识图谱

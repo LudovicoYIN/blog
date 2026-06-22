@@ -4,7 +4,9 @@ pubDatetime: 2026-06-22T10:00:00Z
 title: "[论文精读] EvolveNav: Proactive Preflection and Self-Evolving Memory for Zero-Shot Object Goal Navigation"
 featured: false
 draft: false
-tags: [论文精读, 零样本泛化]
+tags:
+  - 论文精读
+  - 零样本泛化
 description: "零样本物体目标导航中的自进化框架——无需微调，通过经验记忆和前瞻反思实现持续在线改进"
 ---
 

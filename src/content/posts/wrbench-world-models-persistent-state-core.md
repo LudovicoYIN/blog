@@ -4,9 +4,9 @@ pubDatetime: 2026-06-22T13:30:00Z
 title: "[论文精读] Current World Models Lack a Persistent State Core — WRBench: 世界模型缺少持久状态核"
 featured: false
 draft: false
-tags: [论文精读, 世界模型]
-  - 论文精读
+tags:
   - 世界模型
+  - 论文精读
   - 评测基准
   - Video Generation
 description: "WRBench 首次系统性诊断世界模型在不可观测期间的状态演化能力，发现 23 个模型无一能在摄像头移开后保持事件终态一致性。"

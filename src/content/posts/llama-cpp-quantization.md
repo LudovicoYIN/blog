@@ -4,7 +4,9 @@ pubDatetime: 2026-05-30T00:00:00Z
 title: llama.cpp Hexagon NPU 量化：Q4_0 / IQ4_NL / MXFP4 / Q8_0
 featured: true
 draft: false
-tags: [论文精读, 量化]
+tags:
+  - 量化
+  - 论文精读
   - 端侧大模型
 description: Q4_0 / Q4_1 / IQ4_NL / MXFP4 / Q8_0 五种 HTP 原生量化格式的原理、反量化路径与对比。
 ---

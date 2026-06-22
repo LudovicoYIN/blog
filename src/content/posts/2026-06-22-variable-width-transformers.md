@@ -4,7 +4,9 @@ pubDatetime: 2026-06-22T08:18:00Z
 title: "[论文精读] Variable-Width Transformers：打破均匀宽度假设的 × 形架构"
 featured: false
 draft: false
-tags: [论文精读, 大模型]
+tags:
+  - 论文精读
+  - 大模型
 description: MIT Yoon Kim 团队提出 ><former 变量宽度 Transformer 架构，通过 × 形宽度分配（两头宽、中间窄），在参数匹配下实现更低 Loss、更少 FLOPs、更小 KV Cache，并缓解中层表示坍缩。
 ---
 

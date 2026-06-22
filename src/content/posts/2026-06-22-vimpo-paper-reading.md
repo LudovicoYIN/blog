@@ -4,10 +4,10 @@ pubDatetime: 2026-06-22T12:00:00Z
 title: "[论文精读] VIMPO: Value-Implicit Policy Optimization for LLMs"
 featured: false
 draft: false
-tags: [论文精读, 大模型]
+tags:
+  - 大模型
   - 论文精读
   - RLVR
-  - 大模型
   - 强化学习
   - 推理优化
 description: "无需 Critic 的 RLVR 新范式：从 KL 正则最优条件导出隐式价值函数，实现 Token 级信用分配，全面超越 GRPO。"

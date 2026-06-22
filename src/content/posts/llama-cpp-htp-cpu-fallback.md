@@ -4,7 +4,9 @@ pubDatetime: 2026-06-05T09:00:00Z
 title: llama.cpp HTP 调优：少用 CPU 为什么反而慢
 featured: false
 draft: false
-tags: [论文精读, 大模型]
+tags:
+  - 大模型
+  - 论文精读
   - 端侧大模型
 description: 用 Qwen3-0.6B 的 profile 解释一个朴素误区：减少 CPU 参与不等于更快。HTP attention、SET_ROWS、图切分和真实 token/s 的关系。
 ---

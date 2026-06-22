@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T03:55:00Z
 title: "[论文精读] VERITAS: 验证器引导的零样本形式化定理证明"
 featured: false
 draft: false
-tags: [论文精读, 零样本泛化]
+tags:
   - 论文精读
   - 零样本泛化
   - 形式化证明

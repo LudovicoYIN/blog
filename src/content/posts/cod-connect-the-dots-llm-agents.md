@@ -4,9 +4,9 @@ pubDatetime: 2026-06-22T13:00:00Z
 title: "[论文精读] Connect the Dots: 通过强化学习训练 LLM 的长效 Agent 跨域泛化能力"
 featured: false
 draft: false
-tags: [论文精读, Agent]
-  - 论文精读
+tags:
   - Agent
+  - 论文精读
   - 强化学习
   - Meta-RL
 description: 阿里巴巴团队提出 CoD 框架，通过端到端 RL 训练 LLM 在长生命周期部署中"连接信息点"的元能力，实现跨域泛化。

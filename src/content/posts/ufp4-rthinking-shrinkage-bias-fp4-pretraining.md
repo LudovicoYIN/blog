@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T06:00:00Z
 title: "[论文精读] Rethinking Shrinkage Bias in LLM FP4 Pretraining: UFP4 统一量化配方"
 featured: false
 draft: false
-tags: [论文精读, 量化]
+tags:
   - 论文精读
   - 量化
   - FP4训练

@@ -4,7 +4,9 @@ pubDatetime: 2026-06-22T00:00:00Z
 title: "[论文精读] SEVRA: 预算感知推理的选择性验证"
 featured: false
 draft: false
-tags: [论文精读, 大模型]
+tags:
+  - 论文精读
+  - 大模型
 description: "SEVRA 将推理后决策建模为可恢复性感知的问题——不是所有额外推理都有价值，有的会修复错误，有的会浪费算力，有的会把正确答案改错。"
 ---
 

@@ -4,9 +4,9 @@ pubDatetime: 2026-06-22T09:00:00Z
 title: "[论文精读] S-Agent: Spatial Tool-Use Elicits Reasoning for Spatial Intelligence"
 featured: false
 draft: false
-tags: [论文精读, Agent]
-  - 论文精读
+tags:
   - Agent
+  - 论文精读
   - 空间智能
   - VLM
   - 多模态

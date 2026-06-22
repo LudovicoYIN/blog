@@ -4,7 +4,12 @@ pubDatetime: 2026-06-22T18:00:00Z
 title: "[论文精读] DreamReasoner-8B: 块级课程学习让扩散模型也能推理"
 featured: false
 draft: false
-tags: [论文精读, 大模型, 扩散语言模型, 推理加速, Block Diffusion]
+tags:
+  - 论文精读
+  - 大模型
+  - 扩散语言模型
+  - 推理加速
+  - Block Diffusion
 description: DreamReasoner-8B 通过块级课程学习解决了扩散语言模型在长链思维推理中的粒度困境，在数学和代码推理上追平 Qwen3-8B-Thinking。
 ---
 

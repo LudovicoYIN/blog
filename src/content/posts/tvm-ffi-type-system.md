@@ -4,7 +4,9 @@ pubDatetime: 2026-05-28T14:00:00Z
 title: TVM FFI（二）：类型系统与容器
 featured: false
 draft: false
-tags: [论文精读, 量化]
+tags:
+  - 量化
+  - 论文精读
   - AI编译器
 description: Any/AnyView 所有权语义、Array/Map/Variant/Expected 容器、结构相等性与哈希、反射系统与 Dataclass。
 ---

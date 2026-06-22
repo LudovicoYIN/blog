@@ -4,7 +4,9 @@ pubDatetime: 2026-06-22T17:40:00Z
 title: "[论文精读] MosaicQuant: Inlier-Outlier Disaggregation for Unified 4-Bit LLM Quantization"
 featured: false
 draft: false
-tags: [论文精读, 量化]
+tags:
+  - 论文精读
+  - 量化
 description: MosaicQuant 提出内/异常值分解范式，通过密集 4-bit 基 + 稀疏 4-bit 残差补偿实现统一 4-bit 推理，ZipperEngine 融合核实现 1.24x 加速。
 ---
 

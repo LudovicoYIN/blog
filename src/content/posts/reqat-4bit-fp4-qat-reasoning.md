@@ -4,7 +4,9 @@ pubDatetime: 2026-06-22T04:30:00Z
 title: "[论文精读] ReQAT: 用 4-bit FP4 QAT 实现推理模型全精度精度"
 featured: false
 draft: false
-tags: [论文精读, 量化]
+tags:
+  - 论文精读
+  - 量化
 description: ReQAT 通过熵感知训练策略，在 FP4 量化下恢复甚至超越 BF16 推理精度，推理速度提升 3.9 倍。
 ---
 

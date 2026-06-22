@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T01:00:00Z
 title: "[论文精读] SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation"
 featured: false
 draft: false
-tags: [论文精读, 推理加速]
+tags:
   - 论文精读
   - 推理加速
   - 自回归图像生成

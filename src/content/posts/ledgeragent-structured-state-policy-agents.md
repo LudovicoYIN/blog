@@ -4,7 +4,9 @@ pubDatetime: 2026-06-22T02:30:00Z
 title: "[论文精读] LedgerAgent: 用结构化账本让 Agent 遵守策略"
 featured: false
 draft: false
-tags: [论文精读, Agent]
+tags:
+  - 论文精读
+  - Agent
 description: LedgerAgent 通过显式状态账本和策略门控解决工具调用 Agent 的状态丢失与策略违规问题，在 4 个客服领域 6 个模型上稳定提升 pass^k。
 ---
 

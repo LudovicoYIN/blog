@@ -4,7 +4,9 @@ pubDatetime: 2026-06-22T00:00:00Z
 title: "[论文精读] UltraQuant: 4-bit KV Caching for Context-Heavy Agents"
 featured: false
 draft: false
-tags: [论文精读, 量化]
+tags:
+  - 论文精读
+  - 量化
 description: AMD 团队提出 UltraQuant，将 KV Cache 压缩至 4-bit，在 Agent 多轮对话场景下实现 3.47x TTFT 加速，1.63x 吞吐提升。
 ---
 

@@ -4,7 +4,9 @@ pubDatetime: 2026-05-29T00:00:00Z
 title: llama.cpp 高通 Hexagon NPU 初跑 Qwen3.5 4B 模型
 featured: true
 draft: false
-tags: [论文精读, 量化]
+tags:
+  - 量化
+  - 论文精读
   - 端侧大模型
 description: 从 GGUF 量化、交叉编译到板端推理，完整记录 llama.cpp 在骁龙 Hexagon NPU 上的部署流程与调优经验。
 ---

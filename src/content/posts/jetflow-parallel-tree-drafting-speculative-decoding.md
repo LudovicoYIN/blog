@@ -4,7 +4,11 @@ pubDatetime: 2026-06-22T18:16:00Z
 title: "[论文精读] JetFlow: Breaking the Scaling Ceiling of Speculative Decoding with Parallel Tree Drafting"
 featured: false
 draft: false
-tags: [论文精读, 推理加速, Speculative Decoding, LLM]
+tags:
+  - 论文精读
+  - 推理加速
+  - Speculative Decoding
+  - LLM
 description: JetFlow 通过因果并行树草稿打破投机解码的扩展天花板，在 H100 上实现最高 9.64x 加速。
 ---
 

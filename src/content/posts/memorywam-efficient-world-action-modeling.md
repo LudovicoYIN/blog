@@ -4,7 +4,9 @@ pubDatetime: 2026-06-22T09:30:00Z
 title: "[论文精读] MemoryWAM: 高效世界动作建模与持久记忆"
 featured: false
 draft: false
-tags: [论文精读, 世界模型]
+tags:
+  - 论文精读
+  - 世界模型
 description: MemoryWAM 提出混合记忆机制，将 WAM 推理复杂度从 O(N) 降至 O(N/d)，在 RMBench 上以 15 倍更低的 KV Cache 实现超越全历史缓存的 SOTA 性能。
 ---
 
