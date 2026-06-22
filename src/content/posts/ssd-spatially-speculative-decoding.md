@@ -48,7 +48,7 @@ description: "SSD 将推测解码从 1D 序列扩展到 2D 空间结构，在保
 
 论文通过一个巧妙的实验验证了核心假设：**空间相关性本质上是 2D 的**。
 
-![2D 预测依赖性](/papers/2606.20543/fig1-2d-dependency.jpg)
+![2D 预测依赖性](/blog/papers/2606.20543/fig1-2d-dependency.jpg)
 
 > **Figure 1**: 将 Janus-Pro-7B 生成过程中每行的后半部分替换为随机 token（红色框），只要上方 token 正确生成（蓝色框），视觉连贯性依然保持。这证明垂直预测依赖的是空间相邻性，而非展平序列中的位置。
 
@@ -65,7 +65,7 @@ SSD 将 2D 空间预测分解为两个正交的 1D 预测流：
 1. **水平头**（$k_h=5$）：沿行内预测后续 token
 2. **垂直头**（$k_v=1$ 或 $2$）：跨行预测下方 token
 
-![SSD 方法总览](/papers/2606.20543/fig2-ssd-overview.jpg)
+![SSD 方法总览](/blog/papers/2606.20543/fig2-ssd-overview.jpg)
 
 > **Figure 2**: (a) 标准 AR 将图像展平为 1D 序列，$O(n^2)$ 步；(b) 推测解码加速但受限于线性几何，仍为 $O(n^2)$；(c) SSD 对齐图像内在几何，并行起草整行空间块，复杂度降至 $O(n)$。应用于 Emu3-8B 实现 13.7x 加速。
 
@@ -98,7 +98,7 @@ $$f_{\phi}(\mathbf{z}) = \mathbf{W}_0\mathbf{z} + \text{SwiGLU}(\text{RMSNorm}(\
 - 输出：偏移 $\delta$ 处的隐状态预测
 - 训练损失：Smooth L1 loss 对冻结骨干网络的真实隐状态
 
-![隐空间 vs Token 空间](/papers/2606.20543/fig6-token-vs-hidden.jpg)
+![隐空间 vs Token 空间](/blog/papers/2606.20543/fig6-token-vs-hidden.jpg)
 
 > **Figure 6**: Token 空间头（$\mathbf{e} \to \mathbf{e}$）无法重建有意义的视觉内容，而隐状态头（$\mathbf{h}_{\text{pre}} \oplus \mathbf{e} \to \mathbf{h}_{\text{pre}}$）生成连贯图像。
 
@@ -191,16 +191,16 @@ $r=0$ 时草稿已保持粗略空间结构，$r=2$ 时视觉质量与 AR baselin
 
 **验证轮数对质量的影响**：
 
-![AR](/papers/2606.20543/fig7-r0.jpg)
+![AR](/blog/papers/2606.20543/fig7-r0.jpg)
 **AR baseline**
 
-![r=0](/papers/2606.20543/fig7-r0-sample.jpg)
+![r=0](/blog/papers/2606.20543/fig7-r0-sample.jpg)
 **r=0（无验证）**：保留粗略空间布局
 
-![r=1](/papers/2606.20543/fig7-r1.jpg)
+![r=1](/blog/papers/2606.20543/fig7-r1.jpg)
 **r=1**：恢复局部细节
 
-![r=2](/papers/2606.20543/fig7-r2.jpg)
+![r=2](/blog/papers/2606.20543/fig7-r2.jpg)
 **r=2**：与 AR baseline 视觉不可区分
 
 > **Figure 7**: Janus-Pro-7B 在不同垂直验证轮数下的输出对比。$r=2$ 时视觉质量与 AR baseline 不可区分，同时保持 5.70x 延迟加速。
@@ -209,17 +209,17 @@ $r=0$ 时草稿已保持粗略空间结构，$r=2$ 时视觉质量与 AR baselin
 
 联合验证（Joint）vs 分阶段验证（Staged）：
 
-![Joint](/papers/2606.20543/fig8-joint.jpg)
+![Joint](/blog/papers/2606.20543/fig8-joint.jpg)
 **Joint (b=9, i=0)**
 
-![Staged](/papers/2606.20543/fig8-staged-1.jpg)
+![Staged](/blog/papers/2606.20543/fig8-staged-1.jpg)
 **Staged (b=5, i=4)**
 
 > **Figure 8**: Lumina-mGPT-7B 在联合验证 vs 分阶段验证下的对比。分阶段验证先提交第一行，再在修正后的上下文上精炼第二行，产生更清晰的细节和更连贯的空间结构。
 
 **扩展定性对比**：
 
-![扩展定性对比](/papers/2606.20543/fig9-extended-quality.jpg)
+![扩展定性对比](/blog/papers/2606.20543/fig9-extended-quality.jpg)
 
 > **Figure 9**: AR baseline、SJD、1D-MTP 与 SSD 在三模型上的并排对比。SSD 在实现显著加速的同时保持高视觉保真度。
 

@@ -53,7 +53,7 @@ $$\mathbb{E}[\rho_G(t)-t \mid t\in\mathcal{B}_i] = \frac{\ell_i - r_i}{2} < 0$$
 
 **E1M2 的均匀网格** 满足 $\ell_i = r_i$ 对所有区间成立，从根本上消除这一偏差源。
 
-![Figure 1a: E2M1 vs E1M2/INT4 量化网格对比](/papers/2606.20381/figure1a-e2m1-vs-e1m2-bins.jpg)
+![Figure 1a: E2M1 vs E1M2/INT4 量化网格对比](/blog/papers/2606.20381/figure1a-e2m1-vs-e1m2-bins.jpg)
 
 ### 3.2 系统性影响：跨层累积与 RHT 恶化
 
@@ -71,7 +71,7 @@ $$\prod_{k=1}^{K}\eta_k = \prod_{k=1}^{K}(1-\delta_k) \approx \exp\left(-\sum_{k
 
 **关键洞察：RHT 使问题恶化。** RHT 将异常值能量分散到所有坐标，将张量从"动态范围受限"转变为"局部分辨率受限"。E2M1 的宽动态范围优势不再重要，瓶颈转移到典型幅度的精确表示。RHT 将数据质量推入 E2M1 最不对称的舍入区间，导致 $\Delta$SQNR < 0。而 E1M2 均匀网格安全地将展平分布转化为更高保真度（$\Delta$SQNR > 0）。
 
-![Figure 1b: 124B MoE BF16 相对损失退化](/papers/2606.20381/figure1b-loss-degradation.jpg)
+![Figure 1b: 124B MoE BF16 相对损失退化](/blog/papers/2606.20381/figure1b-loss-degradation.jpg)
 
 ## 4. UFP4 方案
 
@@ -94,7 +94,7 @@ $$\prod_{k=1}^{K}\eta_k = \prod_{k=1}^{K}(1-\delta_k) \approx \exp\left(-\sum_{k
 1. **均匀网格** 消除几何 Shrinkage Bias
 2. **全路径 RHT** 覆盖三个 GEMM（FPROP、DGRAD、WGRAD）
 
-![Figure 3: UFP4 配方概览](/papers/2606.20381/figure3-ufp4-recipe-overview.jpg)
+![Figure 3: UFP4 配方概览](/blog/papers/2606.20381/figure3-ufp4-recipe-overview.jpg)
 
 ### 4.3 为什么全路径 RHT 可行？
 

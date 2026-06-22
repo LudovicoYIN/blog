@@ -48,7 +48,7 @@ description: UNIBOOST 无需预测解码长度，通过 γ-Boost 优先级函数
 
 UNIBOOST 的完整设计分为四个阶段，逐步增强调度能力：
 
-![UNIBOOST 四阶段架构](/papers/2606.18431/architecture.png)
+![UNIBOOST 四阶段架构](/blog/papers/2606.18431/architecture.png)
 
 *Figure 4: 四阶段设计及其与异步 γ 参数更新的交互关系*
 

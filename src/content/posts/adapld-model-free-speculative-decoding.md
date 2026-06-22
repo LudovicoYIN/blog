@@ -160,7 +160,7 @@ $$\hat{y}_{i+1}^{(b)} = M_{i, j_b^*+1}$$
 
 > 图片来源论文原文：
 
-![Spec-Bench 加速对比](/papers/2606.05742/table1-specbench.png)
+![Spec-Bench 加速对比](/blog/papers/2606.05742/table1-specbench.png)
 
 **CodeEditorBench 代码编辑任务（Vicuna-33B）：**
 
@@ -174,7 +174,7 @@ $$\hat{y}_{i+1}^{(b)} = M_{i, j_b^*+1}$$
 
 > AdaPLD 在代码编辑任务上达到 **3.10x** 最高加速，尤其在 Switch（需求切换）子任务上表现突出。
 
-![CodeEditorBench 加速对比](/papers/2606.05742/table2-codeeditorbench.png)
+![CodeEditorBench 加速对比](/blog/papers/2606.05742/table2-codeeditorbench.png)
 
 **推理任务（Vicuna-13B）：**
 
@@ -186,7 +186,7 @@ $$\hat{y}_{i+1}^{(b)} = M_{i, j_b^*+1}$$
 
 > 推理任务中 AdaPLD 在 13B/33B 模型上全面领先，说明结构化推理过程中也存在可重用模式。
 
-![推理任务加速对比](/papers/2606.05742/table3-reasoning.png)
+![推理任务加速对比](/blog/papers/2606.05742/table3-reasoning.png)
 
 ### 4.2 消融实验
 
@@ -197,7 +197,7 @@ $$\hat{y}_{i+1}^{(b)} = M_{i, j_b^*+1}$$
 | w/o 后继 | 1.68 | 2.43 | 1.76 | 2.24 | 2.32 | 1.68 | 4.47 | 2.37 |
 | w/o 语义回退 | 1.70 | 2.38 | 1.73 | 2.18 | 2.27 | 1.62 | 3.91 | 2.24 |
 
-![消融实验](/papers/2606.05742/table4-ablation.png)
+![消融实验](/blog/papers/2606.05742/table4-ablation.png)
 
 **关键发现：**
 - 移除分支+后继草稿导致最大下降（2.40→2.18），证明锚点包含的有用信号远超单一 span
@@ -217,7 +217,7 @@ $$\hat{y}_{i+1}^{(b)} = M_{i, j_b^*+1}$$
 | 32 | 2.90 | 2.58 |
 | 64 | 3.00 | 1.95 |
 
-![分支宽度敏感性](/papers/2606.05742/fig1-branch-width.png)
+![分支宽度敏感性](/blog/papers/2606.05742/fig1-branch-width.png)
 
 > K=8~16 时加速最优，K=64 时加速骤降至 1.95x——验证开销超过重用收益。
 
@@ -231,7 +231,7 @@ $$\hat{y}_{i+1}^{(b)} = M_{i, j_b^*+1}$$
 | 50 | 2.698 | 2.58 |
 | 100 | 2.680 | 2.09 |
 
-![复制长度敏感性](/papers/2606.05742/fig2-copy-length.png)
+![复制长度敏感性](/blog/papers/2606.05742/fig2-copy-length.png)
 
 > 长度 30 为最优，过长复制增加验证成本而不显著提升重用。
 
@@ -246,7 +246,7 @@ $$\hat{y}_{i+1}^{(b)} = M_{i, j_b^*+1}$$
 | 0.50 | 2.57 | 2.52 |
 | 0.80 | 2.52 | 2.50 |
 
-![阈值敏感性](/papers/2606.05742/fig3-threshold.png)
+![阈值敏感性](/blog/papers/2606.05742/fig3-threshold.png)
 
 > τ=0.1 为默认值，低阈值区域加速稳定，高阈值显著降低性能。
 
@@ -262,7 +262,7 @@ $$\hat{y}_{i+1}^{(b)} = M_{i, j_b^*+1}$$
 | branch+succ（分支+后继） | 272 |
 | prefill | 80 |
 
-![重用来源分布](/papers/2606.05742/fig4-reuse-breakdown.png)
+![重用来源分布](/blog/papers/2606.05742/fig4-reuse-breakdown.png)
 
 > 成功重用并非由单一机制主导：主路径仍是核心来源，但分支路径占成功重用的 ~36%，证明锚点包含的信息远超其直接后续 span。
 

@@ -132,11 +132,11 @@ end for
 
 ### 3.6 方法架构
 
-![VIMPO 方法总览](/papers/2606.20008/img_in_image_box_188_92_1016_303.jpg)
+![VIMPO 方法总览](/blog/papers/2606.20008/img_in_image_box_188_92_1016_303.jpg)
 
 *Figure 1: VIMPO 架构。给定 prompt $q$，策略生成回复 $o$，评分获得结果奖励 $r$。VIMPO 用此奖励训练策略隐含价值损失，同时策略与冻结参考模型定义 Token 级 TD 信号用于形成 Actor Advantage。无需训练显式 Critic。*
 
-![VIMPO 信用分配特性](/papers/2606.20008/img_in_image_box_569_1205_1062_1345.jpg)
+![VIMPO 信用分配特性](/blog/papers/2606.20008/img_in_image_box_569_1205_1062_1345.jpg)
 
 *Figure 2: VIMPO 是无 Critic 方法，但具备 Token 级信用分配能力。*
 

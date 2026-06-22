@@ -37,7 +37,7 @@ NVIDIA Blackwell 架构原生支持 **NVFP4**（E2M1 格式，2-bit 指数 + 1-b
 **核心发现**: 量化噪声对**低熵 token**（数字、运算符等确定性预测）的采样误差影响最大，而非高熵 token（连接词、过渡短语）。
 
 <div align="center">
-<img src="/papers/2606.15682/fig1_overview.jpg" alt="Figure 1: NVFP4 W4A4KV4 PTQ 精度下降与 ReQAT 恢复效果" width="80%">
+<img src="/blog/papers/2606.15682/fig1_overview.jpg" alt="Figure 1: NVFP4 W4A4KV4 PTQ 精度下降与 ReQAT 恢复效果" width="80%">
 <p>Figure 1: (a) NVFP4 W4A4KV4 PTQ 精度下降; (b-c) QAT 精度恢复; (d) 精度-吞吐量权衡</p>
 </div>
 
@@ -50,7 +50,7 @@ NVIDIA Blackwell 架构原生支持 **NVFP4**（E2M1 格式，2-bit 指数 + 1-b
 **实验 1: 语义分析** — 低熵 token 以数字和符号运算符为主，高熵 token 以话语标记和连接词为主。
 
 <div align="center">
-<img src="/papers/2606.15682/fig2_entropy.jpg" alt="Figure 2: 低熵与高熵 token 的语义分布" width="30%">
+<img src="/blog/papers/2606.15682/fig2_entropy.jpg" alt="Figure 2: 低熵与高熵 token 的语义分布" width="30%">
 <p>Figure 2(a): 低熵 token 以数字/运算符为主，高熵 token 以连接词为主</p>
 </div>
 
@@ -63,7 +63,7 @@ NVIDIA Blackwell 架构原生支持 **NVFP4**（E2M1 格式，2-bit 指数 + 1-b
 ### 3.2 ReQAT 三件套
 
 <div align="center">
-<img src="/papers/2606.15682/fig3_pipeline.jpg" alt="Figure 3: ReQAT 整体流程" width="90%">
+<img src="/blog/papers/2606.15682/fig3_pipeline.jpg" alt="Figure 3: ReQAT 整体流程" width="90%">
 <p>Figure 3: ReQAT 整体流程 — BF16 FT → Q-FIT 校准 → TAQ+SEM QAT</p>
 </div>
 

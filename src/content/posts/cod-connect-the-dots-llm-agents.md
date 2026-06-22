@@ -61,7 +61,7 @@ description: 阿里巴巴团队提出 CoD 框架，通过端到端 RL 训练 LLM
 
 **CoD-TRAIN**（训练机制）：RL 后训练过程，rollout 模式与 CoD-DEPLOY 完全一致，在多个训练环境（A, B, ...）上进行以支持泛化。
 
-![CoD 框架图](/papers/2606.20002/img_in_image_box_111_114_1117_602.jpg)
+![CoD 框架图](/blog/papers/2606.20002/img_in_image_box_111_114_1117_602.jpg)
 
 *Figure 1: CoD-DEPLOY 与 CoD-TRAIN 的可视化对比（相比标准 task-by-task RL）*
 
@@ -87,7 +87,7 @@ CoD-TRAIN 在层次上比标准 RL 高一级：不是训练"如何解一个任�
 - 定义每个 episode 的 **return = 当前 episode 奖励均值 + 未来 solve-task episode 奖励均值**
 - 将同一 rollout 位置上的 episode 分组，用组平均 return 作为 advantage 计算的 baseline
 
-![Advantage 计算图](/papers/2606.20002/img_in_image_box_110_117_1096_422.jpg)
+![Advantage 计算图](/blog/papers/2606.20002/img_in_image_box_110_117_1096_422.jpg)
 
 *Figure 2: CoD-TRAIN RL 算法中的 advantage 计算可视化*
 
@@ -119,7 +119,7 @@ CoD-TRAIN 在层次上比标准 RL 高一级：不是训练"如何解一个任�
 
 ### 设置 A: 单一环境训练（FROZENLAKE-OBSCURE）
 
-![实验结果图](/papers/2606.20002/img_in_image_box_102_936_1134_1452.jpg)
+![实验结果图](/blog/papers/2606.20002/img_in_image_box_102_936_1134_1452.jpg)
 
 *Figure 3: 设置 A 的实验结果*
 

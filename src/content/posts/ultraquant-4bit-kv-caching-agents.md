@@ -93,7 +93,7 @@ $$\hat{x} = \text{code} \times 2^{\text{scale}}, \quad \text{scale} = \text{byte
 
 AMD `MFMA_SCALE_F32_*_F8F6F4` 指令直接将 FP4 码和 UE8M0 字节作为原生操作数，**KV 值永远不会被 Materialize 为 BF16**。
 
-![UltraQuant 优化阶梯](/papers/2606.20474/fig8_ultraquant_ladder.png)
+![UltraQuant 优化阶梯](/blog/papers/2606.20474/fig8_ultraquant_ladder.png)
 *Figure 8: UltraQuant 优化阶梯，从基线到 16.77x 加速的逐步优化路径*
 
 #### 常数优化缩放
@@ -106,7 +106,7 @@ $$c^* = \arg\min_c \mathbb{E}\left[\left(z - cm \cdot q(z/(cm))\right)^2\right]$
 
 在真实旋转 key 激活上评估，最优解为 **$c = 0.156$**。
 
-![代码本层放置对比](/papers/2606.20474/fig2_codebook_levels.png)
+![代码本层放置对比](/blog/papers/2606.20474/fig2_codebook_levels.png)
 *Figure 2: 4-bit 码本层放置对比。Lloyd-Max 为算法基准，FP4 E2M1 为硬件原生近似，对称 INT4 为均匀基线*
 
 ### 3.4 去除 QJL 归一化
@@ -134,7 +134,7 @@ UltraQuant 丢弃了码本路径使用的逐 token $\ell_2$ 归一化（K-norm�
 | MiniMax-M2.5 | GPQA-Diamond | 84.34 | 83.33 | 83.84 | 82.32 | -2.02 |
 | Qwen2.5-72B | GPQA-Diamond | 49.49 | 52.53 | 52.53 | 51.01 | +1.52 |
 
-![精度对比表](/papers/2606.20474/table2_accuracy.png)
+![精度对比表](/blog/papers/2606.20474/table2_accuracy.png)
 *Table 2: 生产精度矩阵。UltraQuant 在 GPQA 上接近无损，但在 AIME25 上有明显回归（-10~-13 pp）*
 
 **关键发现**: 精度表现是基准依赖的，而非普遍近无损。论文坦诚报告了 AIME25 上的回归（Qwen3.5-A3B: -13.3pp, MiniMax-M2.5: -10.0pp），而非隐藏在平均值中。
@@ -143,7 +143,7 @@ UltraQuant 丢弃了码本路径使用的逐 token $\ell_2$ 归一化（K-norm�
 
 #### 吞吐对比
 
-![吞吐对比](/papers/2606.20474/fig4_throughput.png)
+![吞吐对比](/blog/papers/2606.20474/fig4_throughput.png)
 *Figure 4: UltraQuant 吞吐（相对 BF16）vs. BF16, FP8 KV, Ultra-TQ*
 
 | 方法 | 输出吞吐（相对 BF16） |
@@ -158,7 +158,7 @@ UltraQuant 达到 BF16 基线的 **1.38x**，与硬件 FP8 KV（1.37x）差距�
 
 #### 逐 Token 延迟
 
-![TPOT 对比](/papers/2606.20474/fig5_tpot.png)
+![TPOT 对比](/blog/papers/2606.20474/fig5_tpot.png)
 *Figure 5: 中位数逐 Token 延迟（相对 BF16）*
 
 | 方法 | TPOT（相对 BF16） |
@@ -171,7 +171,7 @@ UltraQuant 达到 BF16 基线的 **1.38x**，与硬件 FP8 KV（1.37x）差距�
 
 #### Agent 多轮对话场景
 
-![多轮延迟](/papers/2606.20474/fig1_per_round_latency.png)
+![多轮延迟](/blog/papers/2606.20474/fig1_per_round_latency.png)
 *Figure 1: 多轮 Agent 工作流逐轮延迟。UltraQuant 在所有轮次保持低延迟，FP8 在后期轮次因缓存淘汰而退化*
 
 | 指标 | UltraQuant vs. FP8 KV |
@@ -185,7 +185,7 @@ UltraQuant 达到 BF16 基线的 **1.38x**，与硬件 FP8 KV（1.37x）差距�
 
 #### 上下文长度敏感性
 
-![上下文长度延迟](/papers/2606.20474/fig6_context_latency.png)
+![上下文长度延迟](/blog/papers/2606.20474/fig6_context_latency.png)
 *Figure 6: 逐 Token 延迟 vs. 输入上下文长度。UltraQuant 在 64K 时达到 ~0.5x BF16 延迟*
 
 | 输入长度 | BF16 | FP8 | UltraQuant | Ultra-TQ |
@@ -216,12 +216,12 @@ UltraQuant 达到 BF16 基线的 **1.38x**，与硬件 FP8 KV（1.37x）差距�
 | fp4 c=0.195 | 63.0% | 0.0 pp |
 | fp4 c=1.0 (无收缩) | 58.7% | -4.3 pp |
 
-![代码本失真对比](/papers/2606.20474/fig3_codebook_distortion.png)
+![代码本失真对比](/blog/papers/2606.20474/fig3_codebook_distortion.png)
 *Figure 3: 旋转单位向量分布上的代码本失真。FP4 高于 Lloyd-Max 理论下界，但 constOpt per-block scale 关闭了大部分 MSE 差距*
 
 #### 缓存压力制度对比
 
-![缓存压力消融](/papers/2606.20474/fig9a_ttft_gmu060.png)
+![缓存压力消融](/blog/papers/2606.20474/fig9a_ttft_gmu060.png)
 *Figure 9: 两种缓存压力制度下的逐轮延迟。GMU=0.60 时 UltraQuant 优势最大，GMU=0.65 时三者接近*
 
 ---

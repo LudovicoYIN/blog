@@ -86,7 +86,7 @@ $$\mathcal{L} = \underbrace{\mathbb{E}[\|\hat{z}_{t+1} - z_{t+1}\|^2]}_{\mathcal
 
 ### 论文原图：方法总览
 
-![方法架构图](/papers/2606.20104/img_in_image_box_138_79_1057_395.jpg)
+![方法架构图](/blog/papers/2606.20104/img_in_image_box_138_79_1057_395.jpg)
 
 > **Figure 1: Method overview.** 编码器 $f_\theta$、前向动力学 $g_\phi$、逆动力学 $h_\psi$ 联合训练。逆损失作为反坍塌机制：为使动作可恢复，$f_\theta$ 必须保留 $(o_t, o_{t+1})$ 中的动作相关信息。
 
@@ -102,7 +102,7 @@ $$\mathcal{L} = \underbrace{\mathbb{E}[\|\hat{z}_{t+1} - z_{t+1}\|^2]}_{\mathcal
 
 **可控自由度追踪：** 论文设计四种配置测试编码器是否能区分可控与不可控自由度：
 
-![可控自由度追踪](/papers/2606.20104/img_in_image_box_138_70_1042_478.jpg)
+![可控自由度追踪](/blog/papers/2606.20104/img_in_image_box_138_70_1042_478.jpg)
 
 > **Figure 4: Effective latent dimension tracks controllable degrees of freedom.** 四种配置的 PCA 谱显示，编码器将显著方差精确分配到可控自由度，过滤不可控干扰项。
 
@@ -115,7 +115,7 @@ $$\mathcal{L} = \underbrace{\mathbb{E}[\|\hat{z}_{t+1} - z_{t+1}\|^2]}_{\mathcal
 
 **控制依赖感知：** 论文用三角形精灵实验可视化"感知随可控性变化"：
 
-![控制依赖重建](/papers/2606.20104/img_in_image_box_141_312_1058_690.jpg)
+![控制依赖重建](/blog/papers/2606.20104/img_in_image_box_141_312_1058_690.jpg)
 
 > **Figure 12: Control-dependent reconstruction.** 无控制时表示坍塌；仅 x/y 控制时保留位置但平均化方向；全控制时保留完整位姿。
 
@@ -136,7 +136,7 @@ $$\mathcal{L} = \underbrace{\mathbb{E}[\|\hat{z}_{t+1} - z_{t+1}\|^2]}_{\mathcal
 | Push-T | 83% | **87%** | 2% | 3% |
 | OGBench-Cube | **84%** | 59% | 44% | 43% |
 
-![规划性能](/papers/2606.20104/img_in_image_box_146_95_1082_334.jpg)
+![规划性能](/blog/papers/2606.20104/img_in_image_box_146_95_1082_334.jpg)
 
 > **Figure 5: Planning success across environments.** SMWM 在三个 2D 任务上匹配 SIGReg，在 3D OGBench-Cube 上显著超越（84% vs 59%）。
 
@@ -153,7 +153,7 @@ $$\mathcal{L} = \underbrace{\mathbb{E}[\|\hat{z}_{t+1} - z_{t+1}\|^2]}_{\mathcal
 
 ### 5. 潜空间几何
 
-![潜空间几何](/papers/2606.20104/img_in_image_box_148_101_1111_728.jpg)
+![潜空间几何](/blog/papers/2606.20104/img_in_image_box_148_101_1111_728.jpg)
 
 > **Figure 6: Latent geometry of SMWM embeddings.** 各环境 PCA 谱在低维处急剧下降。TwoRoom/Push-T 呈现近似线性方向，Reacher 的周期性关节角编码为 2-环面（3D PC 投影中可见圆柱结构）。
 

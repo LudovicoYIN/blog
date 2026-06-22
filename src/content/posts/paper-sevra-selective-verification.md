@@ -63,13 +63,13 @@ $$z \in \{\text{ACCEPT, CONTINUE, ACTIVE-VERIFY}\}$$
 
 论文原图展示了 SEVRA 的完整流程：
 
-![SEVRA 架构图](/papers/2606.19808/img_in_image_box_98_31_1121_559.jpg)
+![SEVRA 架构图](/blog/papers/2606.19808/img_in_image_box_98_31_1121_559.jpg)
 
 > Figure 1: Overview of SEVRA. Offline, a frozen solver generates base attempts, candidate recovery actions are executed, and repair, flip, and token cost outcomes are logged to train a recoverability-aware policy.
 
 论文原图展示了服务层决策流程：
 
-![SEVRA 服务层决策流程](/papers/2606.19808/img_in_image_box_108_773_577_1144.jpg)
+![SEVRA 服务层决策流程](/blog/papers/2606.19808/img_in_image_box_108_773_577_1144.jpg)
 
 > Table 1: SEVRA as a serving-layer procedure. The controller changes only the post-generation decision; the solver and verification model remain frozen.
 

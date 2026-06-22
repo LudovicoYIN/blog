@@ -60,7 +60,7 @@ MODE 团队发现，当将 MoE LLM 的"专家激活频率即重要性"范式迁�
 
 ### 3.1 整体 Pipeline
 
-![MODE 整体流程图](/papers/2606.17118/fig5_pipeline.jpg)
+![MODE 整体流程图](/blog/papers/2606.17118/fig5_pipeline.jpg)
 
 > Figure 5: Pipeline of MODE. 模态维度的频率和敏感性逐专家分析，通过 ILP 在预算下分配专家级比特宽度。
 
@@ -131,7 +131,7 @@ $$\sum_e \sum_{b\in\mathcal{B}} b\cdot x_{e,b} = n\cdot k, \quad \sum_{b\in\math
 
 **结果：** (b) >> (a)，确认模态平衡的重要性；(c) > (b) > (d)，确认关键视觉 token 比冗余 token 提供更忠实的专家重要性信号。
 
-![概念验证结果](/papers/2606.17118/fig1_performance_comparison.jpg)
+![概念验证结果](/blog/papers/2606.17118/fig1_performance_comparison.jpg)
 
 > Figure 1: Qwen3-VL-30B-A3B-Instruct 在 3-bit 权重量化下的性能对比。
 
