@@ -69,7 +69,7 @@ VERITAS 设计了四个专业化代理，共享统一证明状态 `ProofState s 
 
 ### 3.2 论文原图：VERITAS 两阶段协议
 
-![VERITAS 两阶段协议](/blog/papers/2606.19399/pipeline.png)
+![VERITAS 两阶段协议](/blog/papers/2606.19399/img_in_image_box_79_37_1133_458.jpg)
 
 *Figure 1. VERITAS two-phase protocol. Phase 1: Best-of-N dispatch; failures feed corpus F₁. Phase 2: Critic-guided MCTS on U₁ with Lean signals σ_A–σ_D; final S = S₁ ∪ S₂ satisfies S ⊇ S₁.*
 

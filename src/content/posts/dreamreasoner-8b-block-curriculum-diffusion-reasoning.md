@@ -124,7 +124,7 @@ $$S_{i}=\frac{\sum_{j\in\mathcal{N}_{r}(i)\cap\mathcal{R}}w_{i,j}}{\sum_{j\in\ma
 
 ### 4.1 Base 模型对比
 
-![Base Model Comparison](/papers/2606.19257/overview.png)
+![Base Model Comparison](/blog/papers/2606.19257/img_in_image_box_147_143_1037_378.jpg)
 
 DreamReasoner-8B-Base 在多项 benchmark 上追平甚至超越同规模 AR 模型：
 

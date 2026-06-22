@@ -33,7 +33,7 @@ MosaicQuant 提出一个反直觉的思路：**不提升异常值的精度，而
 
 ### 整体架构
 
-![MosaicQuant 整体流程](/papers/2606.15652/img_in_image_box_121_99_1059_333.jpg)
+![MosaicQuant 整体流程](/blog/papers/2606.15652/img_in_image_box_223_147_990_366.jpg)
 
 MosaicQuant 将迁移后的权重 $\hat{W}$ 分解为两个 4-bit 组件：
 
@@ -85,7 +85,7 @@ $$S_B = \left[\sum_{(i,j)\in B} h_j \mathbf{R}_{ij}^2 - \sum_{(i,j)\in B} h_j (\
 
 ### ZipperEngine: 密集/稀疏 4-bit 核融合
 
-![ZipperEngine 核融合与重叠执行](/papers/2606.15652/img_in_image_box_182_84_1026_494.jpg)
+![ZipperEngine 核融合与重叠执行](/blog/papers/2606.15652/img_in_image_box_223_147_990_366.jpg)
 
 仅有统一表示不够——如果稀疏残差作为独立 kernel 执行，需要重新加载激活、合并部分输出，增加超过 30% 延迟。
 
@@ -136,7 +136,7 @@ W4A4 下，比 ResQ/Atom 高 1.3-3.8 点，比 SpinQuant 高 0.3-1.2 点。
 
 ### 端到端吞吐量
 
-![吞吐量对比](/papers/2606.15652/img_in_image_box_193_85_1021_292.jpg)
+![吞吐量对比](/blog/papers/2606.15652/img_in_image_box_223_147_990_366.jpg)
 
 Qwen3-8B 上（输入 2048，输出 128）：
 

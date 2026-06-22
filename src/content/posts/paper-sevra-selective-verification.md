@@ -63,7 +63,7 @@ $$z \in \{\text{ACCEPT, CONTINUE, ACTIVE-VERIFY}\}$$
 
 论文原图展示了 SEVRA 的完整流程：
 
-![SEVRA 架构图](/blog/papers/2606.19808/img_in_image_box_98_31_1121_559.jpg)
+![SEVRA 架构图](/blog/papers/2606.19808/img_in_image_box_108_773_577_1144.jpg)
 
 > Figure 1: Overview of SEVRA. Offline, a frozen solver generates base attempts, candidate recovery actions are executed, and repair, flip, and token cost outcomes are logged to train a recoverability-aware policy.
 

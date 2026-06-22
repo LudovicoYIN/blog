@@ -120,11 +120,11 @@ $$T_{\text{prefill}}(L) \gg T_{\text{restore}}(L)$$
 
 ### 3.4 与 vLLM/SGLang 的对比
 
-![系统管理对象对比](/blog/papers/2606.20537/img_in_image_box_135_86_998_475.jpg)
+![系统管理对象对比](/blog/papers/2606.20537/img_in_image_box_620_406_922_481.jpg)
 
 *Figure 1: 各系统管理对象的具体对比。(a) 分页/前缀引擎通过 token 地址复用；(b) FlashRT 将前向传播捕获为连续静态缓冲区上的图计划，边界状态为一个命名、有序的缓冲区集。*
 
-![胶囊动词操作](/blog/papers/2606.20537/img_in_image_box_192_114_1017_269.jpg)
+![胶囊动词操作](/blog/papers/2606.20537/img_in_image_box_620_406_922_481.jpg)
 
 *Figure 2: 胶囊的四个动词操作。snapshot 冻结完整缓冲区集，restore 复制回缓冲区并追加后缀，fork 将一边界分叉为 N 个独立会话，rollback 回退到早期边界。*
 
@@ -169,7 +169,7 @@ $$\text{restore}(P') + \text{append}(\text{suffix}) + \text{decode} = \text{cold
 
 ### 4.1 运行时底座（RTX 5090）
 
-![运行时底座性能](/blog/papers/2606.20537/img_in_image_box_144_89_599_476.jpg)
+![运行时底座性能](/blog/papers/2606.20537/img_in_image_box_620_406_922_481.jpg)
 
 *Figure: 运行时底座性能数据。冷启动 TTFT 尾部紧密（p99 与 p50 差距 < 0.5ms），峰值内存 22.8GB。*
 
@@ -183,7 +183,7 @@ $$\text{restore}(P') + \text{append}(\text{suffix}) + \text{decode} = \text{cold
 
 ### 4.2 胶囊机制性能
 
-![胶囊性能缩放](/blog/papers/2606.20537/img_in_image_box_622_92_991_455.jpg)
+![胶囊性能缩放](/blog/papers/2606.20537/img_in_image_box_620_406_922_481.jpg)
 
 *Figure: 胶囊操作成本随前缀长度缩放。snapshot 和 restore 均为亚毫秒级，append 稳定在 ~25-28ms。*
 
@@ -198,7 +198,7 @@ $$\text{restore}(P') + \text{append}(\text{suffix}) + \text{decode} = \text{cold
 
 ### 4.3 KV-only 消融实验
 
-![消融实验结果](/blog/papers/2606.20537/img_in_image_box_100_149_1004_552.jpg)
+![消融实验结果](/blog/papers/2606.20537/img_in_image_box_620_406_922_481.jpg)
 
 *Figure: 物理 AI 服务场景与胶囊操作。编码 agent 温暖多轮对话、思维树分叉、机器人 RL 回放的 episode 重置。*
 
@@ -212,7 +212,7 @@ $$\text{restore}(P') + \text{append}(\text{suffix}) + \text{decode} = \text{cold
 
 ### 4.4 与 vLLM 对比（RTX 5090）
 
-![与 vLLM 对比](/blog/papers/2606.20537/img_in_image_box_104_350_492_519.jpg)
+![与 vLLM 对比](/blog/papers/2606.20537/img_in_image_box_620_406_922_481.jpg)
 
 *Figure: 运行时底座与状态复用底座的对比。FlashRT 冷启动比 vLLM 低 2.6-2.8×，胶囊比 vLLM APC 缓存命中低 1.4-2.8×。*
 
@@ -224,7 +224,7 @@ $$\text{restore}(P') + \text{append}(\text{suffix}) + \text{decode} = \text{cold
 
 ### 4.5 边缘设备性能
 
-![边缘设备性能](/blog/papers/2606.20537/img_in_image_box_97_159_514_348.jpg)
+![边缘设备性能](/blog/papers/2606.20537/img_in_image_box_620_406_922_481.jpg)
 
 *Figure: 跨设备 TTFT 对比。Jetson Thor 上冷启动需秒级，胶囊恢复仅需 ~250ms。*
 
@@ -238,7 +238,7 @@ Jetson Thor 上冷启动→胶囊加速比：**9-76×**（比 5090 的 27× 更�
 
 ### 4.6 工作集实验
 
-![工作集性能](/blog/papers/2606.20537/img_in_image_box_99_174_513_259.jpg)
+![工作集性能](/blog/papers/2606.20537/img_in_image_box_620_406_922_481.jpg)
 
 *Figure: 实体工作集实验。vLLM-APC 在工作集超过 ~16k tokens 时缓存命中率崩溃至 0，胶囊保持平坦。*
 
@@ -248,7 +248,7 @@ Jetson Thor 上冷启动→胶囊加速比：**9-76×**（比 5090 的 27× 更�
 
 ### 4.7 跨域验证
 
-![跨域验证](/blog/papers/2606.20537/img_in_image_box_615_360_945_551.jpg)
+![跨域验证](/blog/papers/2606.20537/img_in_image_box_620_406_922_481.jpg)
 
 *Figure: LLM+TTS 打断场景。胶囊恢复 persona 比重新推理快 2×。*
 

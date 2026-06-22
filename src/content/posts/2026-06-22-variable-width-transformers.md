@@ -216,7 +216,7 @@ $$\text{Loss} = A \cdot C^{-\alpha}$$
 
 **论文原图：MLP 激活维度利用率热力图（Figure 5）**
 
-![MLP 激活维度利用率对比 - ><former 更均匀地利用激活维度](/blog/papers/2606.18246/fig5-mlp-activation-utilization.jpg)
+![MLP 激活维度利用率对比 - ><former 更均匀地利用激活维度](/blog/papers/2606.18246/img_in_image_box_219_379_1005_829.jpg)
 
 > *上图：2B 模型 MLP 激活维度利用率热力图。左侧为 ><former，右侧为均匀宽度基线。颜色越深表示该维度被激活的频率越高。><former 在中间瓶颈区域（灰色阴影）显示出更均匀的激活分布。*
 

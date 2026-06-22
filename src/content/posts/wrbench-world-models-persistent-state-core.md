@@ -90,7 +90,7 @@ graph LR
     E --> F[诊断报告]
 ```
 
-![WRBench 方法总览](/blog/papers/2606.20545/img_in_image_box_101_624_1113_973.jpg)
+![WRBench 方法总览](/blog/papers/2606.20545/img_in_image_box_137_138_1055_354.jpg)
 
 > Figure 2: WRBench 方法总览。Natural-25 提供场景、事件和视角干预；WRBenchLib 为每个模型生成视频和溯源记录；评测套件从控制执行到重新观察状态一致性评分六个诊断维度；人工偏好标注独立校准每个维度。
 
@@ -116,7 +116,7 @@ graph LR
 | LiveWorld | — | — | — | 39.6% | 0.661 | 0.600 | — |
 | Gen3C | — | — | — | 73.0% | 0.681 | 0.640 | — |
 
-![模型级诊断剖面](/blog/papers/2606.20545/img_in_image_box_89_42_1123_537.jpg)
+![模型级诊断剖面](/blog/papers/2606.20545/img_in_image_box_137_138_1055_354.jpg)
 
 > 高重新观察支持率 ≠ 高状态一致性。Gen3C 支持率最高（73%），但状态一致性仅 0.640。
 
@@ -136,7 +136,7 @@ graph LR
 
 **关键发现：可见维度改善，但重新观察维度反而下降。**
 
-![Wan 系列规模诊断](/blog/papers/2606.20545/img_in_image_box_100_340_1089_477.jpg)
+![Wan 系列规模诊断](/blog/papers/2606.20545/img_in_image_box_137_138_1055_354.jpg)
 
 > Figure 7: Wan 系列规模/版本/架构诊断。共同模式是"可访问性改善比端点持久化更容易"。
 
@@ -150,7 +150,7 @@ LiveWorld 在简单场景下重新出现干净，可见分数高（visible spati
 
 > 向前滚动 backbone 来**幻觉**不可见主体的动态，而非检索存储的状态。单个就座的人在重新出现时被合成为两个蹲伏的人，或在原始位置附近生成额外的位移身体，而静态房间保持清晰。
 
-![LiveWorld 失败案例](/blog/papers/2606.20545/img_in_image_box_103_53_1092_407.jpg)
+![LiveWorld 失败案例](/blog/papers/2606.20545/img_in_image_box_137_138_1055_354.jpg)
 
 > Figure 14: 重新观察可访问性由摄像头通道决定。同一场景在不同方向摄像头扫掠下产生不同的隐藏-返回事件。
 
@@ -192,7 +192,7 @@ LiveWorld 在简单场景下重新出现干净，可见分数高（visible spati
 
 > "Every architecture caches geometry, appearance, or motion to re-render where the scene was, so how the camera is encoded is second-order, while the missing, highest-leverage component is a state writer that records what changed while hidden."
 
-![What vs Where Memory](/blog/papers/2606.20545/img_in_image_box_103_73_1092_522.jpg)
+![What vs Where Memory](/blog/papers/2606.20545/img_in_image_box_137_138_1055_354.jpg)
 
 ---
 

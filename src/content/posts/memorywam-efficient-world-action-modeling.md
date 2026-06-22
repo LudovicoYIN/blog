@@ -71,7 +71,7 @@ MemoryWAM 采用 **Mixture-of-Transformers (MoT)** 架构，包含两个分支�
 └─────────────────────────────────────────────┘
 ```
 
-![MemoryWAM 总体架构](/blog/papers/2606.20562/architecture.png)
+![MemoryWAM 总体架构](/blog/papers/2606.20562/img_in_image_box_780_648_1007_835.jpg)
 
 > **Figure 2**: MemoryWAM 采用 MoT 架构，Video DiT 提供动力学感知表征，Action DiT 预测动作。持久记忆通过锚点帧、近期帧和 Gist Token 实现。
 
@@ -106,7 +106,7 @@ $$\mathcal{C}_{\leq t}^v = \mathcal{C}_{\mathrm{short}}^v \cup \mathcal{C}_{\mat
 - **机制**：gist token $g_t$ 对当前帧 $f_t$ 和历史上下文进行 attention，后续 token 不直接 attend 到 $f_i$，而是 attend 到 $g_i$
 - **复杂度**：从 $O(NL)$ 降至 $O(NM) = O(NL/d)$
 
-![Attention Mask](/blog/papers/2606.20562/attention_mask.png)
+![Attention Mask](/blog/papers/2606.20562/img_in_image_box_780_648_1007_835.jpg)
 
 > **Figure 3**: MemoryWAM 的 Attention Mask。f 为完整视频帧，g 为 gist token，a 为待去噪动作。非近期/非锚点帧的完整 token 被驱逐，仅保留 gist token。
 
@@ -203,11 +203,11 @@ graph TD
 
 硬件平台：ARX 双机械臂 + RealSense D455 相机，部署在单张 RTX 4090 上。
 
-![真实世界任务](/blog/papers/2606.20562/realworld_tasks.png)
+![真实世界任务](/blog/papers/2606.20562/img_in_image_box_780_648_1007_835.jpg)
 
 > **Figure 5**: 真实世界任务展示。左：Shell Game（寻找被移动的小方块）；右：Look and Press（观察数字并按对应次数按键）。
 
-![硬件设置](/blog/papers/2606.20562/hardware_setup.png)
+![硬件设置](/blog/papers/2606.20562/img_in_image_box_780_648_1007_835.jpg)
 
 > **Figure 6**: 硬件设置。双机械臂系统 + RealSense D455 相机。
 

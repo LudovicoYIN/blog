@@ -93,7 +93,7 @@ flowchart TD
 
 ### 3.4 架构图
 
-![LedgerAgent 架构](/blog/papers/2606.20529/arch.png)
+![LedgerAgent 架构](/blog/papers/2606.20529/img_in_image_box_146_144_1046_579.jpg)
 
 > Figure 1: 标准 Agent 检索到预订信息但后续发出策略违规的取消请求（状态隐式存在于 prompt 中）。LedgerAgent 将工具返回存入类型化账本，在执行前通过策略门控拦截违规操作。
 
