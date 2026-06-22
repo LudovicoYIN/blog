@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T10:45:00Z
 title: "[论文精读] MODE: 面向 MoE 多模态大模型的模态分解专家混合精度量化"
 featured: false
 draft: false
-tags:
+tags: [论文精读, 量化]
   - 论文精读
   - 量化
   - MoE

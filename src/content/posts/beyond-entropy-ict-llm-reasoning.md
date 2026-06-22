@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T01:55:00Z
 title: "[论文精读] Beyond Entropy: 从 Token 分布差异驱动 LLM 推理探索"
 featured: false
 draft: false
-tags:
+tags: [论文精读, 大模型]
   - 论文精读
   - LLM
   - RLVR

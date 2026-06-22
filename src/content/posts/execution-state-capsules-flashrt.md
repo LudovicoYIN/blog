@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T05:10:00Z
 title: "[论文精读] Execution-State Capsules: FlashRT 的执行状态快照机制"
 featured: false
 draft: false
-tags:
+tags: [论文精读, 推理加速]
   - 论文精读
   - 推理加速
   - LLM Serving

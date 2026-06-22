@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T12:00:00Z
 title: "[论文精读] Beyond Prediction: Tail-Aware Scheduling for LLM Inference"
 featured: false
 draft: false
-tags: [论文精读, 推理加速, LLM Serving, 调度算法]
+tags: [论文精读, 推理加速]
 description: UNIBOOST 无需预测解码长度，通过 γ-Boost 优先级函数和 KV-Aware 抢占机制，将 P99 TTLT 降低 35-50%。
 ---
 

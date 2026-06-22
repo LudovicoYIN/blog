@@ -4,7 +4,7 @@ pubDatetime: 2026-06-06T16:00:00Z
 title: Hermes Agent + Tailscale：免打扰远程控制
 featured: false
 draft: false
-tags:
+tags: [论文精读, Agent]
   - agent
 description: 用 Hermes Agent 的 YOLO 模式搭配 Tailscale，让 AI 助手无缝 SSH 接管你的任何设备。
 ---

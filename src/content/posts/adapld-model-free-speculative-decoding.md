@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T07:30:00Z
 title: "[论文精读] AdaPLD: 自适应检索与重用的无模型投机解码"
 featured: false
 draft: false
-tags: [论文精读, 推理加速, 投机解码, LLM]
+tags: [论文精读, 推理加速]
 description: AdaPLD 通过词法优先+语义回退的自适应检索与分支草稿构造，在无辅助模型的情况下实现最高 3.10x 的解码加速。
 ---
 

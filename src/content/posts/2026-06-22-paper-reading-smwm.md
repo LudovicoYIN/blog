@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T03:30:00Z
 title: "[论文精读] Sensorimotor World Models: Perception for Action via Inverse Dynamics"
 featured: false
 draft: false
-tags: [论文精读, 世界模型, JEPA, 逆动力学, 表示学习]
+tags: [论文精读, 世界模型]
 description: Max Planck 团队提出 SMWM 架构——用逆动力学正则化同时解决 JEPA 式世界模型的表示坍塌与动作对齐问题，无需冻结编码器、EMA 或分布先验。
 ---
 

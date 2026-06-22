@@ -4,7 +4,7 @@ pubDatetime: 2026-06-21T12:00:00Z
 title: 量化算法时间线
 featured: true
 draft: false
-tags:
+tags: [论文精读, 量化]
   - LLM
   - 量化
   - GPTQ

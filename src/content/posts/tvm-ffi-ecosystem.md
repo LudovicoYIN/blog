@@ -4,7 +4,7 @@ pubDatetime: 2026-05-28T16:00:00Z
 title: TVM FFI（三）：多语言绑定与工具链
 featured: false
 draft: false
-tags:
+tags: [论文精读, 量化]
   - AI编译器
 description: Python/Rust 绑定 SDK、JIT 即时编译、stubgen 类型标注生成、全局注册表、stream 管理及 addons。
 ---

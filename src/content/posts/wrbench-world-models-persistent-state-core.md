@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T13:30:00Z
 title: "[论文精读] Current World Models Lack a Persistent State Core — WRBench: 世界模型缺少持久状态核"
 featured: false
 draft: false
-tags:
+tags: [论文精读, 世界模型]
   - 论文精读
   - 世界模型
   - 评测基准

@@ -4,7 +4,7 @@ pubDatetime: 2026-05-29T06:00:00Z
 title: TVM 是什么：层级架构与编译流水线
 featured: true
 draft: false
-tags:
+tags: [论文精读, 量化]
   - AI编译器
 description: 从整体架构到端到端流水线，理解 TVM 是什么、分几层、一个模型如何从 Relax 走到机器码。
 ---

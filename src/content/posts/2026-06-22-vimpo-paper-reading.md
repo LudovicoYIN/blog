@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T12:00:00Z
 title: "[论文精读] VIMPO: Value-Implicit Policy Optimization for LLMs"
 featured: false
 draft: false
-tags:
+tags: [论文精读, 大模型]
   - 论文精读
   - RLVR
   - 大模型

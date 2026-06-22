@@ -4,7 +4,7 @@ pubDatetime: 2026-06-22T13:00:00Z
 title: "[论文精读] Connect the Dots: 通过强化学习训练 LLM 的长效 Agent 跨域泛化能力"
 featured: false
 draft: false
-tags:
+tags: [论文精读, Agent]
   - 论文精读
   - Agent
   - 强化学习

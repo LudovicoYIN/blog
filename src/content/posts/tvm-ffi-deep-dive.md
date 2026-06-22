@@ -4,7 +4,7 @@ pubDatetime: 2026-05-28T12:00:00Z
 title: TVM FFI（一）：对象系统与调用约定
 featured: true
 draft: false
-tags:
+tags: [论文精读, 量化]
   - AI编译器
 description: TVM FFI 的核心骨架：引用计数对象系统、类型擦除容器 TVMFFIAny、Packed Function 调用约定，以及 DLPack 零拷贝张量传递。
 ---

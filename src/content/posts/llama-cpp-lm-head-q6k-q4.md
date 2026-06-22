@@ -4,7 +4,7 @@ pubDatetime: 2026-06-05T10:00:00Z
 title: llama.cpp 里的 lm-head：Q6_K、Q4_0，以及为什么 4B 不一定提速
 featured: false
 draft: false
-tags:
+tags: [论文精读, 量化]
   - 端侧大模型
 description: 从 Qwen3/Qwen3.5 的 tied embedding 看 lm-head 性能瓶颈：0.6B 改 output-q4_0 有收益，4B 上收益有限甚至可能变慢。
 ---
