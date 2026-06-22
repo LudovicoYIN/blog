@@ -25,7 +25,7 @@ description: 阿里巴巴团队提出 CoD 框架，通过端到端 RL 训练 LLM
 
 ---
 
-## 研究背景与动机
+## 研究背景
 
 ### 当前 Agent 的局限
 
@@ -153,7 +153,7 @@ CoD-TRAIN 在层次上比标准 RL 高一级：不是训练"如何解一个任�
 
 ---
 
-## 与相关工作对比
+## 相关论文
 
 ### Meta-RL 对比
 
@@ -181,7 +181,7 @@ CoD-DEPLOY 可以看作推理缩放（inference scaling）的推广：
 
 ---
 
-## Mermaid 流程图：CoD 训练流程
+## 核心方法
 
 ```mermaid
 flowchart TD

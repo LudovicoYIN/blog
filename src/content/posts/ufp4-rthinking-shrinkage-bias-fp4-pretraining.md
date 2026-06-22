@@ -14,7 +14,7 @@ tags: [论文精读, 量化]
 description: 蚂蚁集团提出 UFP4 统一 4-bit 训练配方，揭示 E2M1 格式固有 Shrinkage Bias，在 124B MoE 预训练中将 BF16 相对损失误差从 1.73% 降至 1.39%。
 ---
 
-## 1. 论文基本信息
+## 论文信息
 
 | 字段 | 内容 |
 |------|------|
@@ -25,7 +25,7 @@ description: 蚂蚁集团提出 UFP4 统一 4-bit 训练配方，揭示 E2M1 格
 | **arXiv** | [2606.20381](https://arxiv.org/abs/2606.20381) |
 | **代码** | 未公开 |
 
-## 2. 研究背景与动机
+## 研究背景
 
 FP4 训练被视为 LLM 预训练的下一站。NVIDIA Blackwell/Rubin 和 AMD MI350 系列均已原生支持 FP4 计算路径，理论上可将显存和计算开销再减半。但当前所有 FP4 训练方案几乎全部围绕 **E2M1**（2 指数位 + 1 尾数位）展开——MXFP4、NVFP4、Quartet II、TetraJet-v2 无一例外。
 
@@ -33,7 +33,7 @@ FP4 训练被视为 LLM 预训练的下一站。NVIDIA Blackwell/Rubin 和 AMD M
 
 作者发现 E2M1 的 **非均匀量化网格** 存在结构性缺陷——其 RTNE（Round-to-Nearest-Even）舍入区间的几何不对称性导致系统性负舍入误差（Shrinkage Bias）。这个偏差在深层网络中呈指数级累积，且 RHT（Random Hadamard Transform）不仅不能缓解，反而会加剧问题。
 
-## 3. 核心发现：Shrinkage Bias 机制
+## 核心方法
 
 ### 3.1 几何起源
 
@@ -73,7 +73,7 @@ $$\prod_{k=1}^{K}\eta_k = \prod_{k=1}^{K}(1-\delta_k) \approx \exp\left(-\sum_{k
 
 ![Figure 1b: 124B MoE BF16 相对损失退化](/blog/papers/2606.20381/figure1b-loss-degradation.jpg)
 
-## 4. UFP4 方案
+
 
 ### 4.1 设计原则
 
@@ -100,7 +100,7 @@ $$\prod_{k=1}^{K}\eta_k = \prod_{k=1}^{K}(1-\delta_k) \approx \exp\left(-\sum_{k
 
 现有 E2M1 方案（如 NVFP4）通常只将 RHT 限制在 bwd_dw 路径，因为 RHT 在非叶子路径（fwd_y、bwd_dx）上会加剧 E2M1 的几何误差。UFP4 的关键洞察是：**问题不在 RHT 本身，而在 E2M1 与 RHT 后张量分布的失配**。均匀网格下，RHT 扩展到全部三条路径反而保持稳定的长期收益。
 
-## 5. 实验结果
+## 实验结果
 
 ### 5.1 单张量量化诊断
 
@@ -137,7 +137,7 @@ $$\prod_{k=1}^{K}\eta_k = \prod_{k=1}^{K}(1-\delta_k) \approx \exp\left(-\sum_{k
 
 融合 RHT+quantization 内核在 SM90 和 SM100 上分别为 standalone quantization 的 **1.06x** 和 **1.07x**，未融合方案则为 1.62x 和 1.41x。
 
-## 6. 个人评价
+## 个人评价
 
 ### 优点
 

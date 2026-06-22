@@ -17,7 +17,7 @@ description: MosaicQuant 提出内/异常值分解范式，通过密集 4-bit �
 - **PDF**: [https://arxiv.org/pdf/2606.15652](https://arxiv.org/pdf/2606.15652)
 - **一句话总结**: 提出内/异常值分解（Inlier-Outlier Disaggregation）范式，用密集 4-bit 基 + 稀疏 4-bit 残差实现统一 4-bit 推理，配合 ZipperEngine 融合核达 1.24x 加速。
 
-## 研究背景与动机
+## 研究背景
 
 ### 问题
 

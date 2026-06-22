@@ -12,7 +12,7 @@ tags: [论文精读, 世界模型]
 description: "WRBench 首次系统性诊断世界模型在不可观测期间的状态演化能力，发现 23 个模型无一能在摄像头移开后保持事件终态一致性。"
 ---
 
-## 1. 论文信息
+## 论文信息
 
 - **标题**: Current World Models Lack a Persistent State Core
 - **作者**: Jinpeng Lu, Dexu Zhu, Haoyuan Shi, Linghan Cai, Guo Tang, Yinda Chen, Jie Cao, Duyu Tang, Yi Zhang, Yong Dai, Xiaozhu Ju
@@ -22,7 +22,7 @@ description: "WRBench 首次系统性诊断世界模型在不可观测期间的�
 
 ---
 
-## 2. 研究背景与动机
+## 研究背景
 
 ### 核心问题
 
@@ -49,7 +49,7 @@ WRBench 是唯一覆盖**状态鲁棒性**、**演化一致性**和**路径诊�
 
 ---
 
-## 3. 核心方法：WRBench 评测框架
+## 核心方法
 
 ### 3.1 设计理念：摄像头运动 = 可观测性干预
 
@@ -96,7 +96,7 @@ graph LR
 
 ---
 
-## 4. 实验结果
+## 实验结果
 
 ### 4.1 核心发现：所有模型均无法保持不可观测期间的状态演化
 
@@ -170,7 +170,7 @@ LiveWorld 在简单场景下重新出现干净，可见分数高（visible spati
 
 ---
 
-## 5. 论文核心论点（5 个 Findings）
+
 
 ### Finding 1: 现有基准奖励表面属性，不测试隐藏状态演化
 
@@ -196,7 +196,7 @@ LiveWorld 在简单场景下重新出现干净，可见分数高（visible spati
 
 ---
 
-## 6. 个人评价
+## 个人评价
 
 ### 创新点
 
@@ -223,7 +223,7 @@ LiveWorld 在简单场景下重新出现干净，可见分数高（visible spati
 
 ---
 
-## 7. 相关论文
+## 相关论文
 
 1. **[WorldModelBench](https://arxiv.org/abs/2606.19531)** (NeurIPS 2026) — 将视频生成模型作为世界模型评判，但仅评测可视化维度。
 2. **[ImageWAM](https://arxiv.org/abs/2606.19531)** (2026-06-17) — 质疑世界动作模型是否真的需要视频生成，或许图像编辑就够了。与 WRBench 形成有趣对比：一个问"需要多少视觉信息"，另一个问"隐藏了多少状态信息"。

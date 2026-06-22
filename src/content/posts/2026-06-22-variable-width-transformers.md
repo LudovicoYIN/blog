@@ -8,7 +8,7 @@ tags: [论文精读, 大模型]
 description: MIT Yoon Kim 团队提出 ><former 变量宽度 Transformer 架构，通过 × 形宽度分配（两头宽、中间窄），在参数匹配下实现更低 Loss、更少 FLOPs、更小 KV Cache，并缓解中层表示坍缩。
 ---
 
-## 1. 论文信息
+## 论文信息
 
 | 字段 | 内容 |
 |------|------|
@@ -24,7 +24,7 @@ description: MIT Yoon Kim 团队提出 ><former 变量宽度 Transformer 架构�
 
 ---
 
-## 2. 研究背景与动机
+## 研究背景
 
 ### 2.1 问题：均匀宽度假设真的最优吗？
 
@@ -46,7 +46,7 @@ Transformer 的模型规模由 **宽度**（hidden dimension $d$）和 **深度*
 
 ---
 
-## 3. 核心方法
+## 核心方法
 
 ### 3.1 × 形架构设计
 
@@ -153,7 +153,7 @@ $$\left(\frac{1}{L}\sum_{\ell=1}^{L} d_\ell\right)^2 < \frac{1}{L}\sum_{\ell=1}^
 
 ---
 
-## 4. 实验结果
+## 实验结果
 
 ### 4.1 语言建模 Loss 对比
 
@@ -271,7 +271,7 @@ $$\frac{1}{\log r}\left(-\sum_{j=1}^{r} p_j \log p_j\right), \quad p_j = \sigma_
 
 ---
 
-## 7. 相关论文
+## 相关论文
 
 | 论文 | 年份 | 核心贡献 | 与本文关系 |
 |------|------|----------|-----------|
@@ -283,7 +283,7 @@ $$\frac{1}{\log r}\left(-\sum_{j=1}^{r} p_j \log p_j\right), \quad p_j = \sigma_
 
 ---
 
-## 待深入方向
+## 个人评价
 
 - [ ] 更大规模（7B+）验证 × 形优势是否保持
 - [ ] 与指令微调/RLHF 的兼容性

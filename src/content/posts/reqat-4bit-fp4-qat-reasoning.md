@@ -8,7 +8,7 @@ tags: [论文精读, 量化]
 description: ReQAT 通过熵感知训练策略，在 FP4 量化下恢复甚至超越 BF16 推理精度，推理速度提升 3.9 倍。
 ---
 
-## 1. 论文信息
+## 论文信息
 
 - **标题**: ReQAT: Achieving Full-Precision Reasoning Accuracy with 4-bit Floating-Point Quantization-Aware Training
 - **作者**: Janghwan Lee, Sihwa Lee, Jinseok Kim, Yongjik Kim, Jieun Lim, Jinwook Oh, Jungwook Choi
@@ -18,7 +18,7 @@ description: ReQAT 通过熵感知训练策略，在 FP4 量化下恢复甚至�
 
 > **一句话总结**: 发现 FP4 量化失败集中在低熵 token（数字、运算符），提出 TAQ+SEM+Q-FIT 三件套，在 W4A4KV4 下恢复甚至超越 BF16 精度，推理吞吐量提升 3.9×。
 
-## 2. 研究背景与动机
+## 研究背景
 
 ### 2.1 推理模型的部署困境
 
@@ -41,7 +41,7 @@ NVIDIA Blackwell 架构原生支持 **NVFP4**（E2M1 格式，2-bit 指数 + 1-b
 <p>Figure 1: (a) NVFP4 W4A4KV4 PTQ 精度下降; (b-c) QAT 精度恢复; (d) 精度-吞吐量权衡</p>
 </div>
 
-## 3. 核心方法
+## 核心方法
 
 ### 3.1 关键洞察：低熵 token 是量化失败的主因
 
@@ -118,7 +118,7 @@ flowchart TD
     style F fill:#c8e6c9
 ```
 
-## 4. 实验结果
+## 实验结果
 
 ### 4.1 主实验：AIME 精度
 
@@ -208,7 +208,7 @@ ReQAT 在超长响应（24-32K tokens）上表现最佳，证明量化误差不�
 | QAT | 52.01 | 50.68 |
 | **ReQAT_TQS** | **54.52** | **53.59** |
 
-## 5. 个人评价
+## 个人评价
 
 ### 创新点
 
@@ -233,7 +233,7 @@ ReQAT 在超长响应（24-32K tokens）上表现最佳，证明量化误差不�
 - **TAQ 的轨迹复用**思想可推广到其他 QAT 场景
 - **Q-FIT 的联合校准**为 KV cache 量化提供了更通用的初始化框架
 
-## 6. 相关论文
+## 相关论文
 
 | 论文 | 方向 | 简要介绍 |
 |:---:|:---:|:---:|

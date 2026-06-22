@@ -13,7 +13,7 @@ tags: [论文精读, 推理加速]
 description: "SSD 将推测解码从 1D 序列扩展到 2D 空间结构，在保持生成质量的同时实现最高 13.3x 推理加速。"
 ---
 
-## 1. 论文信息
+## 论文信息
 
 - **标题**: SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation
 - **作者**: Shilong Xiang, Zirui Zhang, Lijun Yu, Chengzhi Mao
@@ -26,7 +26,7 @@ description: "SSD 将推测解码从 1D 序列扩展到 2D 空间结构，在保
 
 ---
 
-## 2. 研究背景与动机
+## 研究背景
 
 ### 问题：AR 图像生成的内存墙瓶颈
 
@@ -56,7 +56,7 @@ description: "SSD 将推测解码从 1D 序列扩展到 2D 空间结构，在保
 
 ---
 
-## 3. 核心方法
+## 核心方法
 
 ### 3.1 方法总览
 
@@ -128,7 +128,7 @@ $$\tilde{p}(v \mid \mathbf{c}) = \frac{\max(0, p_{\theta}(v \mid \mathbf{c}) - q
 
 ---
 
-## 4. 实验结果
+## 实验结果
 
 ### 4.1 主结果
 
@@ -225,7 +225,7 @@ $r=0$ 时草稿已保持粗略空间结构，$r=2$ 时视觉质量与 AR baselin
 
 ---
 
-## 5. 个人评价
+## 个人评价
 
 ### 创新点
 
@@ -256,7 +256,7 @@ $r=0$ 时草稿已保持粗略空间结构，$r=2$ 时视觉质量与 AR baselin
 
 ---
 
-## 6. 相关论文
+## 相关论文
 
 1. **Speculative Decoding** (Leviathan et al., ICML 2023) — 原始推测解码方法，使用草稿模型 + 拒绝采样加速 LLM 推理。
 

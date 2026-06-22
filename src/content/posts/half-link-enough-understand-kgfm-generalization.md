@@ -12,7 +12,7 @@ tags: [论文精读, 零样本泛化]
 description: "KGFM 零样本泛化并非均匀分布——半链接视角揭示 0.4 MRR 的性能鸿沟，答案半链接才是正信号，查询半链接反而是干扰项。"
 ---
 
-## 1. 论文信息
+## 论文信息
 
 - **标题**: Half a Link can Be Enough to Predict a Whole Link: Understanding Generalization in Knowledge Graph Foundation Models
 - **作者**: Cosimo Gregucci, Obaidah Theeb, Daniel Hernández, Antonio Vergari, Steffen Staab
@@ -21,7 +21,7 @@ description: "KGFM 零样本泛化并非均匀分布——半链接视角揭示 
 - **PDF**: [链接](https://arxiv.org/pdf/2606.18001)
 - **一句话总结**: 将知识图谱链接预测中的每个测试三元组分解为"查询半链接"和"答案半链接"，发现 KGFM 的零样本泛化性能在四种半链接场景下差异高达 0.4 MRR，且答案半链接是正信号而查询半链接是干扰项。
 
-## 2. 研究背景与动机
+## 研究背景
 
 ### 问题定义
 
@@ -39,7 +39,7 @@ description: "KGFM 零样本泛化并非均匀分布——半链接视角揭示 
 
 > 推理图中对测试三元组的结构证据是什么？它如何映射到关系图 $\mathcal{G}_i^r$ 的表示中？
 
-## 3. 核心方法
+## 核心方法
 
 ### 3.1 半链接分类体系
 
@@ -100,7 +100,7 @@ graph TD
 | **MOTIF** (Huang et al., 2025) | 高阶共现 ($k \geq 3$) | 更长的模式 |
 | **TRIX** (Zhang et al., 2024) | 二元 + 实体级别标记 + 迭代更新 | 更细粒度 |
 
-## 4. 实验结果
+## 实验结果
 
 ### 4.1 场景分布：聚合 MRR 的盲区
 
@@ -142,7 +142,7 @@ graph TD
 
 > 微调在答案不可见场景（SQUA, UQUA）上翻转了模型排名。ULTRA 和 MOTIF 的实体无关关系图从微调中受益，而 TRIX 的实体级别标记反而退化。
 
-## 5. 个人评价
+## 个人评价
 
 ### 创新点
 
@@ -162,7 +162,7 @@ graph TD
 - 指明了未来 KGFM 的设计方向：改善答案不可见场景（SQUA, UQUA）的泛化能力。
 - 微调实验表明答案不可见的性能差距部分是**提取差距**（信号已在推理图中，但模型未利用），为模型改进提供了具体靶点。
 
-## 6. 相关论文
+## 相关论文
 
 1. **ULTRA** (Galkin et al., 2024) — 首个 KGFM 框架，基于二元共现模式构建关系图，奠定零样本 KG 链接预测的基础。
 2. **MOTIF** (Huang et al., 2025) — 将共现模式扩展到高阶 ($k \geq 3$)，在 UQUA 场景下表现最佳。

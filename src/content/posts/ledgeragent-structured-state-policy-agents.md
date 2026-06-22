@@ -8,7 +8,7 @@ tags: [论文精读, Agent]
 description: LedgerAgent 通过显式状态账本和策略门控解决工具调用 Agent 的状态丢失与策略违规问题，在 4 个客服领域 6 个模型上稳定提升 pass^k。
 ---
 
-## 1. 论文信息
+## 论文信息
 
 - **标题**: LedgerAgent: Structured State for Policy-Adherent Tool-Calling Agents
 - **作者**: Md Nayem Uddin, Amir Saeidi, Eduardo Blanco, Chitta Baral
@@ -17,7 +17,7 @@ description: LedgerAgent 通过显式状态账本和策略门控解决工具调�
 - **PDF**: [https://arxiv.org/pdf/2606.20529](https://arxiv.org/pdf/2606.20529)
 - **一句话总结**: 用 schema-anchored 类型化账本替代隐式 prompt 状态管理，配合策略门控在写入前拦截违规操作，无需改模型权重即可提升 Agent 的一致性和策略遵守率。
 
-## 2. 研究背景与动机
+## 研究背景
 
 ### 2.1 问题定义
 
@@ -33,7 +33,7 @@ description: LedgerAgent 通过显式状态账本和策略门控解决工具调�
 
 > 核心洞察：问题不在模型推理能力，而在**状态表示方式**。状态埋在 transcript 中 = 每次都要重新搜索。
 
-## 3. 核心方法
+## 核心方法
 
 LedgerAgent 添加两个**确定性组件**，不改动模型权重：
 
@@ -97,7 +97,7 @@ flowchart TD
 
 > Figure 1: 标准 Agent 检索到预订信息但后续发出策略违规的取消请求（状态隐式存在于 prompt 中）。LedgerAgent 将工具返回存入类型化账本，在执行前通过策略门控拦截违规操作。
 
-## 4. 实验结果
+## 实验结果
 
 ### 4.1 实验设置
 
@@ -159,7 +159,7 @@ Ledger 在 pass^1 上超越 IRMA 3.7 点，pass^4 上超越 7.4 点，且**零 t
 - Airline：参数错误最多（33.9%），不可逆写入风险高
 - Telehealth：参数错误率最高（25.9%），工具 schema 复杂
 
-## 5. 个人评价
+## 个人评价
 
 ### 5.1 创新点
 
@@ -187,7 +187,7 @@ Ledger 在 pass^1 上超越 IRMA 3.7 点，pass^4 上超越 7.4 点，且**零 t
 - 与 Speculative Decoding、KV Cache 压缩等技术正交，可组合使用
 - 策略门控思想可扩展到更广泛的 Agent 安全场景（如代码执行、金融操作）
 
-## 6. 相关论文
+## 相关论文
 
 1. **τ²-bench** (Barres et al., 2025) — 双控制环境下的对话 Agent 评估基准，本文实验基础之一。
 

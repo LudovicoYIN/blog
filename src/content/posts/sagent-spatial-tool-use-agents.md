@@ -28,7 +28,7 @@ description: NTU 提出的空间工具调用智能体框架，将空间推理重
 
 ---
 
-## 研究背景与动机
+## 研究背景
 
 ### 问题定义
 
@@ -189,7 +189,7 @@ ViewSpatial 上 GPT-5.4 规划器的组件消融：
 
 ---
 
-## 定性分析
+## 个人评价
 
 ![定性推理例](/blog/papers/2606.20515/figure4_qualitative_reasoning.jpg)
 

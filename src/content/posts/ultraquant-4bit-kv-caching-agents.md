@@ -8,7 +8,7 @@ tags: [论文精读, 量化]
 description: AMD 团队提出 UltraQuant，将 KV Cache 压缩至 4-bit，在 Agent 多轮对话场景下实现 3.47x TTFT 加速，1.63x 吞吐提升。
 ---
 
-## 1. 论文信息
+## 论文信息
 
 - **标题**: UltraQuant: 4-bit KV Caching for Context-Heavy Agents
 - **作者**: Inesh Chakrabarti, David Limpus, Aditi Ghai Rana, Bowen Bao, Spandan Tiwari, Thiago Crepaldi, Ashish Sirasao
@@ -21,7 +21,7 @@ description: AMD 团队提出 UltraQuant，将 KV Cache 压缩至 4-bit，在 Ag
 
 ---
 
-## 2. 研究背景与动机
+## 研究背景
 
 ### 2.1 问题：Agent 场景下的 KV Cache 压力
 
@@ -46,7 +46,7 @@ LLM 已从短上下文聊天机器人演变为需要长期记忆的 Agent——�
 
 ---
 
-## 3. 核心方法
+## 核心方法
 
 ### 3.1 总体架构
 
@@ -124,7 +124,7 @@ UltraQuant 丢弃了码本路径使用的逐 token $\ell_2$ 归一化（K-norm�
 
 ---
 
-## 4. 实验结果
+## 实验结果
 
 ### 4.1 精度结果
 
@@ -226,7 +226,7 @@ UltraQuant 达到 BF16 基线的 **1.38x**，与硬件 FP8 KV（1.37x）差距�
 
 ---
 
-## 5. 个人评价
+## 个人评价
 
 ### 5.1 创新点
 
@@ -256,7 +256,7 @@ UltraQuant 达到 BF16 基线的 **1.38x**，与硬件 FP8 KV（1.37x）差距�
 
 ---
 
-## 6. 相关论文
+## 相关论文
 
 1. **TurboQuant** (Zandieh et al., ICLR 2026, [arXiv](https://arxiv.org/abs/2606.20474)) — UltraQuant 的算法基础。旋转+码本量化，提供 4-bit 质量锚点。
 

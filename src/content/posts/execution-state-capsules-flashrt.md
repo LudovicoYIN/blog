@@ -13,7 +13,7 @@ tags: [论文精读, 推理加速]
 description: FlashRT 将 LLM 推理的整个执行状态封装为可快照、可恢复、可分叉的"胶囊"对象，在单流低延迟场景下将 TTFT 从秒级压至毫秒级。
 ---
 
-## 1. 论文信息
+## 论文信息
 
 - **标题**: Execution-State Capsules: Graph-Bound Execution-State Checkpoint and Restore for Low-Latency, Small-Batch, On-Device Physical-AI Serving
 - **作者**: Liang Su
@@ -23,7 +23,7 @@ description: FlashRT 将 LLM 推理的整个执行状态封装为可快照、可
 
 **一句话总结**: FlashRT 将 LLM 推理的完整执行状态（KV + 循环状态 + 卷积状态 + MTP 缓存）封装为可快照/恢复/分叉的"胶囊"对象，在单流低延迟场景下将首 token 延迟（TTFT）从冷启动的秒级降至毫秒级，速度提升最高达 76×。
 
-## 2. 研究背景与动机
+## 研究背景
 
 ### 现有 LLM Serving 架构的局限
 
@@ -56,7 +56,7 @@ description: FlashRT 将 LLM 推理的整个执行状态封装为可快照、可
 
 **位置寻址的 KV Cache 只是状态的一部分，不是全部控制面。** 对于混合架构模型（线性注意力 + 全注意力），线性注意力的循环状态是对整个前缀的 fold 操作，无法按位置切片复用。
 
-## 3. 核心方法
+## 核心方法
 
 ### 3.1 FlashRT 运行时底座
 
@@ -165,7 +165,7 @@ $$\text{restore}(P') + \text{append}(\text{suffix}) + \text{decode} = \text{cold
 
 子块余量（<C tokens）由 append 廉价地重新推理。
 
-## 4. 实验结果
+## 实验结果
 
 ### 4.1 运行时底座（RTX 5090）
 
@@ -257,7 +257,7 @@ Jetson Thor 上冷启动→胶囊加速比：**9-76×**（比 5090 的 27× 更�
 | 朴素（重新推理） | 205 ms | 105 ms | **300 ms** |
 | 胶囊（恢复 persona） | 60 ms | 100 ms | **147 ms** |
 
-## 5. 个人评价
+## 个人评价
 
 ### 创新点
 
@@ -286,7 +286,7 @@ Jetson Thor 上冷启动→胶囊加速比：**9-76×**（比 5090 的 27× 更�
 - **多模态交互**: LLM+TTS 打断场景展示了一个统一契约驱动多模型交互的潜力
 - **机器人控制**: episode reset、中断恢复作为零重新捕获操作，为实时控制循环提供了计算状态恢复机制
 
-## 6. 相关论文
+## 相关论文
 
 1. **PagedAttention/vLLM** (SOSP 2023): LLM 服务中的分页 KV Cache 管理，高吞吐批处理的行业标准
 2. **RadixAttention/SGLang** (NeurIPS 2024): 基于前缀树的 KV 复用，自动最长公共前缀匹配

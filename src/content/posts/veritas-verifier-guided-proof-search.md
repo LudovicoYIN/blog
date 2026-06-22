@@ -13,7 +13,7 @@ tags: [论文精读, 零样本泛化]
 description: VERITAS 将 Lean 验证器的结构化反馈（语法/类型/进度/完成）注入生成决策，通过两阶段协议实现零样本形式化定理证明，miniF2F 达到 40.6% 解决率。
 ---
 
-## 1. 论文信息
+## 论文信息
 
 - **标题**: VERITAS: Verifier-Guided Proof Search for Zero-Shot Formal Theorem Proving
 - **作者**: Manish Acharya¹, Zhenyu Liao², Yueke Zhang¹, Kevin Leach¹, Yu Huang¹, Yifan Zhang¹
@@ -22,7 +22,7 @@ description: VERITAS 将 Lean 验证器的结构化反馈（语法/类型/进度
 - **代码**: [GitHub](https://github.com/manishacharya60/veritas)
 - **一句话总结**: 将 Lean 验证器的结构化中间反馈（语法错误、类型不匹配、目标进度、证明完成）注入 LLM 生成决策，通过"Best-of-N → Critic-MCTS"两阶段协议实现零样本定理证明，无需微调。
 
-## 2. 研究背景与动机
+## 研究背景
 
 ### 2.1 形式化定理证明的现状
 
@@ -54,7 +54,7 @@ description: VERITAS 将 Lean 验证器的结构化反馈（语法/类型/进度
 
 **现有方法将这些信号压缩为标量奖励或完全丢弃**。人类证明者恰恰依赖这些中间信号——将它们坍缩为单一比特，迫使搜索重新学习验证器已经明确告知的信息。
 
-## 3. 核心方法
+## 核心方法
 
 ### 3.1 四代理架构
 
@@ -136,7 +136,7 @@ flowchart TD
     P --> Q
 ```
 
-## 4. 实验结果
+## 实验结果
 
 ### 4.1 主要结果
 
@@ -213,7 +213,7 @@ VERITAS 通过迭代纠正名称达到 7.3%（4/55），全部是 Brualdi 教材
 
 VERITAS 在推理 Pareto 前沿上：Best-of-5 在 5 倍 Lean 预算内无法达到 40.6%，VERITAS-MCTSonly 即使在 10 倍 LLM-free 预算下也无法接近。
 
-## 5. 个人评价
+## 个人评价
 
 ### 5.1 创新点
 
@@ -244,7 +244,7 @@ VERITAS 在推理 Pareto 前沿上：Best-of-5 在 5 倍 Lean 预算内无法达
 - 符号执行反例
 - 模型检查轨迹
 
-## 6. 相关论文
+## 相关论文
 
 | 论文 | 方法 | miniF2F | 备注 |
 |------|------|---------|------|
