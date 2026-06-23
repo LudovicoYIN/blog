@@ -22,7 +22,7 @@ description: NTU 提出的空间工具调用智能体框架，将空间推理重
 - **代码**: [Ropedia/S-Agent](https://github.com/Ropedia/S-Agent)
 - **一句话总结**: 将 VLM 作为语义规划器 + 层次化工具链 + 双记忆系统，把空间推理从"单帧直觉猜测"升级为"时空证据积累"的 Agent 范式。
 
-![论文总览](/blog/papers/2606.20515/img_in_image_box_146_502_1044_1130.jpg)
+![论文总览](/blog/papers/2606.20515/img_in_image_box_145_492_1039_1142.jpg)
 
 > Figure 1: S-Agent 总览。VLM 作为语义规划器，层次化工具提供 2D→3D 证据，双记忆系统维持场景状态与推理历史。
 
@@ -112,8 +112,8 @@ S-Agent 的核心创新在于**层次化空间证据获取**，将原始 2D 观�
 2. **质量过滤**: 仅保留执行成功且答案正确的轨迹（过滤率 ~48.4% 被拒绝）
 3. **轨迹分解**: 单条教师轨迹分解为三种监督信号
 
-![数据质量分布](/blog/papers/2606.20515/img_in_image_box_146_502_1044_1130.jpg)
-![工具调用分布](/blog/papers/2606.20515/img_in_image_box_146_502_1044_1130.jpg)
+![数据质量分布](/blog/papers/2606.20515/img_in_image_box_148_620_1034_1141.jpg)
+![工具调用分布](/blog/papers/2606.20515/img_in_image_box_149_620_588_1142.jpg)
 
 > Figure 3: S-300K 数据组成与工具调用统计。100K 原始轨迹 → 51,596 质量过滤 → 292,391 SFT 样本。
 
@@ -191,7 +191,7 @@ ViewSpatial 上 GPT-5.4 规划器的组件消融：
 
 ## 个人评价
 
-![定性推理例](/blog/papers/2606.20515/img_in_image_box_146_502_1044_1130.jpg)
+![定性推理例](/blog/papers/2606.20515/img_in_image_box_161_169_1023_501.jpg)
 
 > Figure 4: 工具 grounding 空间推理示例。VLM 直接回答因遮挡失败，S-Agent 通过工具链恢复 3D 关系。
 
@@ -204,15 +204,15 @@ S-Agent 的推理轨迹：
 4. 相对位置专家通过深度工具提升为度量 3D 表示，构建俯视图布局
 5. 书架估计在 (-0.52, 1.21)，电话在 (-0.34, 1.46) → 书架在电话左侧后方 → 正确答案
 
-![多任务可视化](/blog/papers/2606.20515/img_in_image_box_146_502_1044_1130.jpg)
+![多任务可视化](/blog/papers/2606.20515/img_in_image_box_162_168_1025_578.jpg)
 
 > Figure 5: S-Agent 跨代表性空间推理任务的定性可视化。
 
-![附录定性示例1](/blog/papers/2606.20515/img_in_image_box_146_502_1044_1130.jpg)
+![附录定性示例1](/blog/papers/2606.20515/img_in_image_box_162_513_1021_1027.jpg)
 
 > Figure 6: 附录中更多定性示例。
 
-![附录定性示例2](/blog/papers/2606.20515/img_in_image_box_146_502_1044_1130.jpg)
+![附录定性示例2](/blog/papers/2606.20515/img_in_image_box_166_864_624_1017.jpg)
 
 > Figure 7: 更多证据驱动空间推理示例。
 

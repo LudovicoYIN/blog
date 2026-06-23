@@ -104,7 +104,7 @@ $$\mathcal{J}_{\text{S-GRPO}}(\theta) = \mathbb{E}_{q,\{o_i\}}\left[\frac{1}{G}\
 ### 3.4 算法流程
 
 <!-- Image 1: Figure 1 - 盲探索 vs 引导探索 -->
-![Figure 1: (a) Shannon 熵导致的盲探索 vs (b) ICT 分布信息驱动的引导探索](/blog/papers/2606.19771/img_in_image_box_285_146_932_696.jpg)
+![Figure 1: (a) Shannon 熵导致的盲探索 vs (b) ICT 分布信息驱动的引导探索](/blog/papers/2606.19771/img_in_image_box_157_150_1068_548.jpg)
 
 **Figure 1** 直观展示了三种训练策略的奖励轨迹：
 - **蓝色曲线**（均匀更新）：熵坍缩，奖励快速下降
@@ -129,7 +129,7 @@ flowchart TD
 ```
 
 <!-- Image 2: Figure 2 - ICT 稀疏 RLVR 框架 -->
-![Figure 2: ICT-based Sparse RLVR Framework](/blog/papers/2606.19771/img_in_image_box_285_146_932_696.jpg)
+![Figure 2: ICT-based Sparse RLVR Framework](/blog/papers/2606.19771/img_in_image_box_237_299_984_1196.jpg)
 
 **Figure 2** 展示了 ICT 框架的完整流程：通过 JS 散度选择独特 Token，构建稀疏掩码过滤梯度，实现精准探索引导。
 
@@ -187,7 +187,7 @@ flowchart TD
 #### 独特 Token 的熵属性分析
 
 <!-- Image 4: Figure 4 - 独特 Token 中高/低熵比例 -->
-![Figure 4: 独特 Token 中高熵与低熵 Token 的比例（约 1:1）](/blog/papers/2606.19771/img_in_image_box_285_146_932_696.jpg)
+![Figure 4: 独特 Token 中高熵与低熵 Token 的比例（约 1:1）](/blog/papers/2606.19771/img_in_image_box_157_150_1068_548.jpg)
 
 **Figure 4** 揭示独特 Token 中**高熵与低熵 Token 比例约为 1:1**（GSM8K: 1.03, MATH: 0.99），验证了理论预测的独特 Token 位于两个熵制衡区域之间的关键分支点。
 

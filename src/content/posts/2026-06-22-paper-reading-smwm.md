@@ -88,9 +88,9 @@ $$\mathcal{L} = \underbrace{\mathbb{E}[\|\hat{z}_{t+1} - z_{t+1}\|^2]}_{\mathcal
 
 ### 论文原图：方法总览
 
-![方法架构图](/blog/papers/2606.20104/img_in_image_box_230_346_990_683.jpg)
+![方法架构图](/blog/papers/2606.20104/img_in_image_box_231_141_988_409.jpg)
 
-> **Figure 1: Method overview.** 编码器 $f_\theta$、前向动力学 $g_\phi$、逆动力学 $h_\psi$ 联合训练。逆损失作为反坍塌机制：为使动作可恢复，$f_\theta$ 必须保留 $(o_t, o_{t+1})$ 中的动作相关信息。
+> **Figure 1: Method overview.** 编码器 $f_\\theta$、前向动力学 $g_\\phi$、逆动力学 $h_\\psi$ 联合训练。逆损失作为反坍塌机制：为使动作可恢复，$f_\\theta$ 必须保留 $(o_t, o_{t+1})$ 中的动作相关信息。
 
 ---
 
@@ -104,7 +104,7 @@ $$\mathcal{L} = \underbrace{\mathbb{E}[\|\hat{z}_{t+1} - z_{t+1}\|^2]}_{\mathcal
 
 **可控自由度追踪：** 论文设计四种配置测试编码器是否能区分可控与不可控自由度：
 
-![可控自由度追踪](/blog/papers/2606.20104/img_in_image_box_230_346_990_683.jpg)
+![可控自由度追踪](/blog/papers/2606.20104/img_in_image_box_227_139_989_505.jpg)
 
 > **Figure 4: Effective latent dimension tracks controllable degrees of freedom.** 四种配置的 PCA 谱显示，编码器将显著方差精确分配到可控自由度，过滤不可控干扰项。
 
@@ -123,9 +123,9 @@ $$\mathcal{L} = \underbrace{\mathbb{E}[\|\hat{z}_{t+1} - z_{t+1}\|^2]}_{\mathcal
 
 ### 2. 前向模型交换性
 
-论文证明编码器与前向模型近似交换：$f(a(o)) \approx g_a(f(o))$。这意味着物理动作在潜空间中近似为平移：$g_a(z) \approx z + \rho(a)$。
+论文证明编码器与前向模型近似交换：$f(a(o)) \\approx g_a(f(o))$。这意味着物理动作在潜空间中近似为平移：$g_a(z) \\approx z + \\rho(a)$。
 
-**定理 1：** 若 $f$ 满足交换性，则 $a \mapsto g_a$ 是 $f(\mathcal{O})$ 上的同态映射。
+**定理 1：** 若 $f$ 满足交换性，则 $a \\mapsto g_a$ 是 $f(\\mathcal{O})$ 上的同态映射。
 
 ### 3. 潜空间规划性能
 
@@ -138,7 +138,7 @@ $$\mathcal{L} = \underbrace{\mathbb{E}[\|\hat{z}_{t+1} - z_{t+1}\|^2]}_{\mathcal
 | Push-T | 83% | **87%** | 2% | 3% |
 | OGBench-Cube | **84%** | 59% | 44% | 43% |
 
-![规划性能](/blog/papers/2606.20104/img_in_image_box_230_346_990_683.jpg)
+![规划性能](/blog/papers/2606.20104/img_in_image_box_228_138_988_714.jpg)
 
 > **Figure 5: Planning success across environments.** SMWM 在三个 2D 任务上匹配 SIGReg，在 3D OGBench-Cube 上显著超越（84% vs 59%）。
 
@@ -155,7 +155,7 @@ $$\mathcal{L} = \underbrace{\mathbb{E}[\|\hat{z}_{t+1} - z_{t+1}\|^2]}_{\mathcal
 
 ### 5. 潜空间几何
 
-![潜空间几何](/blog/papers/2606.20104/img_in_image_box_230_346_990_683.jpg)
+![潜空间几何](/blog/papers/2606.20104/img_in_image_box_232_139_986_706.jpg)
 
 > **Figure 6: Latent geometry of SMWM embeddings.** 各环境 PCA 谱在低维处急剧下降。TwoRoom/Push-T 呈现近似线性方向，Reacher 的周期性关节角编码为 2-环面（3D PC 投影中可见圆柱结构）。
 

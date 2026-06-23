@@ -71,7 +71,7 @@ $$z \in \{\text{ACCEPT, CONTINUE, ACTIVE-VERIFY}\}$$
 
 论文原图展示了服务层决策流程：
 
-![SEVRA 服务层决策流程](/blog/papers/2606.19808/img_in_image_box_108_773_577_1144.jpg)
+![SEVRA 服务层决策流程](/blog/papers/2606.19808/img_in_image_box_98_31_1121_559.jpg)
 
 > Table 1: SEVRA as a serving-layer procedure. The controller changes only the post-generation decision; the solver and verification model remain frozen.
 

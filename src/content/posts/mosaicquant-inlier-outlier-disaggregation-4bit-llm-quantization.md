@@ -87,7 +87,7 @@ $$S_B = \left[\sum_{(i,j)\in B} h_j \mathbf{R}_{ij}^2 - \sum_{(i,j)\in B} h_j (\
 
 ### ZipperEngine: 密集/稀疏 4-bit 核融合
 
-![ZipperEngine 核融合与重叠执行](/blog/papers/2606.15652/img_in_image_box_223_147_990_366.jpg)
+![ZipperEngine 核融合与重叠执行](/blog/papers/2606.15652/img_in_image_box_251_147_968_520.jpg)
 
 仅有统一表示不够——如果稀疏残差作为独立 kernel 执行，需要重新加载激活、合并部分输出，增加超过 30% 延迟。
 

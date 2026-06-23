@@ -131,7 +131,7 @@ flowchart TD
 - **扩散头（diffusion head）** 的 rank-1 分支是 "given told that"，累计草稿代理 $\sum \log r_i = -3.76$，但累计目标条件 $\sum \log p = -63.32$ nats（概率约 $e^{-63}$）——这个分支把两个互斥的开头拼在一起
 - **因果头（causal head）** 的 rank-1 分支是 "are told that"，代理与目标差距仅 -0.34 nats，树验证接受 6 个 token
 
-![树质量对比](/blog/papers/2606.18394/img_in_image_box_255_144_968_378.jpg)
+![树质量对比](/blog/papers/2606.18394/img_in_image_box_269_301_915_435.jpg)
 
 *Figure 4: 因果头 vs 扩散头的树质量对比。因果头的 rank-1 分支忠实于目标联合分布，扩散头的 rank-1 分支支离破碎。*
 
@@ -155,7 +155,7 @@ flowchart TD
 
 ### 4.2 端到端加速对比
 
-![端到端加速对比](/blog/papers/2606.18394/img_in_image_box_255_144_968_378.jpg)
+![端到端加速对比](/blog/papers/2606.18394/img_in_image_box_269_495_965_595.jpg)
 
 *Figure 1: H100 GPU 上数学、代码、聊天基准的端到端解码加速对比。JetFlow 在所有基准上显著优于 DFlash 和 DDTree。*
 
@@ -192,7 +192,7 @@ flowchart TD
 
 ### 4.5 扩展性分析
 
-![SD 扩展性分析](/blog/papers/2606.18394/img_in_image_box_255_144_968_378.jpg)
+![SD 扩展性分析](/blog/papers/2606.18394/img_in_image_box_271_156_875_364.jpg)
 
 *Figure 2: 投机解码加速随草稿长度 $\gamma$ 的变化，不同草稿成本 $c$ 和接受率 $\alpha$。降低 $c$ 并提高 $\alpha$ 是解锁长草稿扩展的关键。*
 

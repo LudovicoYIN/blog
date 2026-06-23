@@ -87,7 +87,7 @@ CoD-TRAIN 在层次上比标准 RL 高一级：不是训练"如何解一个任�
 - 定义每个 episode 的 **return = 当前 episode 奖励均值 + 未来 solve-task episode 奖励均值**
 - 将同一 rollout 位置上的 episode 分组，用组平均 return 作为 advantage 计算的 baseline
 
-![Advantage 计算图](/blog/papers/2606.20002/img_in_image_box_161_197_1070_606.jpg)
+![Advantage 计算图](/blog/papers/2606.20002/img_in_image_box_165_157_1049_428.jpg)
 
 *Figure 2: CoD-TRAIN RL 算法中的 advantage 计算可视化*
 

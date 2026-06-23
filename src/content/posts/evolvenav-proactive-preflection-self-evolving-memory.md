@@ -52,7 +52,7 @@ description: "零样本物体目标导航中的自进化框架——无需微调
 
 EvolveNav 将导航转化为**持续自我改进过程**，由两个核心组件构成：
 
-![方法对比图](/blog/papers/2606.18235/img_in_image_box_765_560_1103_1008.jpg)
+![方法对比图](/blog/papers/2606.18235/img_in_image_box_112_179_1109_541.jpg)
 
 **左：EvolveNav（自进化）**
 - 从历史回合中学习 → 动态更新规则 → 前瞻反思避免低价值房间 → 持续进化规则库
@@ -60,7 +60,7 @@ EvolveNav 将导航转化为**持续自我改进过程**，由两个核心组件
 **右：Baseline（被动反应）**
 - 依赖固定先验 → 重复犯错 → 低效探索
 
-![方法总览](/blog/papers/2606.18235/img_in_image_box_765_560_1103_1008.jpg)
+![方法总览](/blog/papers/2606.18235/img_in_image_box_114_173_1109_720.jpg)
 
 ### 3.2 组件一：自进化 Agent 规则记忆（Inter-Episode Rule Self-Evolution）
 
@@ -177,7 +177,7 @@ graph TD
 
 ### 4.4 定性可视化
 
-![导航过程可视化](/blog/papers/2606.18235/img_in_image_box_765_560_1103_1008.jpg)
+![导航过程可视化](/blog/papers/2606.18235/img_in_image_box_114_180_1110_734.jpg)
 
 **案例**：寻找"盆栽"的多房间场景
 - Step 22：触发前瞻反思，检索规则"避免依赖 spa/jacuzzi 的间接关联"，成功绕过误导性前沿 1
