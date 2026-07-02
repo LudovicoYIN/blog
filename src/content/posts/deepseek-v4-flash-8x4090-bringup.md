@@ -5,10 +5,7 @@ title: 在 8x4090 上硬跑 DeepSeek-V4-Flash 的踩坑随记
 featured: true
 draft: false
 tags:
-  - 论文精读
-  - 量化
   - 大模型推理
-  - vLLM
 description: 本来想看看 4090 能不能凑合跑 DeepSeek-V4-Flash，跑是跑通了，但离"能用"还很远。一篇随记。
 ---
 

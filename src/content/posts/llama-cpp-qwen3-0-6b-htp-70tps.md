@@ -5,9 +5,8 @@ title: llama.cpp 跑 Qwen3-0.6B：HTP 上从 20 到 70 token/s
 featured: true
 draft: false
 tags:
-  - 论文精读
-  - 量化
   - 端侧大模型
+  - llama.cpp
 description: 一次 Snapdragon Hexagon HTP 上的真实调优记录：OPPOLL、算子过滤、lm-head 量化，以及为什么 70 token/s 不是“全上 NPU”跑出来的。
 ---
 

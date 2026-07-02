@@ -5,9 +5,8 @@ title: TVM FFI（二）：类型系统与容器
 featured: false
 draft: false
 tags:
-  - 量化
-  - 论文精读
   - AI编译器
+  - TVM
 description: Any/AnyView 所有权语义、Array/Map/Variant/Expected 容器、结构相等性与哈希、反射系统与 Dataclass。
 ---
 
