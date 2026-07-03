@@ -1,54 +1,168 @@
 ---
-import LinkButton from "@/components/LinkButton.astro";
-import { tplStr, useTranslations } from "@/i18n";
 import config from "@/config";
+import { useTranslations } from "@/i18n";
 
-const { shareLinks } = config;
 const t = useTranslations(Astro.currentLocale);
-
-const icons = import.meta.glob<{
-  default: (_props: Record<string, unknown>) => unknown;
-}>("/src/assets/icons/socials/*.svg");
-
-const pageUrl = Astro.url;
-
-const platformLabel = (name: string) =>
-  name.charAt(0).toUpperCase() + name.slice(1);
-
-const items = await Promise.all(
-  shareLinks.map(async ({ name, url, linkTitle }) => {
-    const mod = await icons[`/src/assets/icons/socials/${name}.svg`]?.();
-    const Icon = mod?.default;
-    const title =
-      linkTitle ??
-      (name === "mail"
-        ? t.post.sharePostViaEmail
-        : tplStr(t.post.sharePostOn, { platform: platformLabel(name) }));
-    return { url, title, Icon };
-  })
-);
+const pageUrl = Astro.url.href;
 ---
 
-{
-  items.some(({ Icon }) => Icon) && (
-    <div class="flex flex-none flex-col items-center justify-center gap-1 md:items-start">
-      <span class="italic">{t.post.sharePostIntro}</span>
-      <div class="text-center">
-        {items.map(({ url, title, Icon }) =>
-          Icon ? (
-            <LinkButton
-              href={`${url}${pageUrl}`}
-              class="scale-90 p-2 hover:rotate-6 sm:p-1"
-              title={title}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Icon class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110" />
-              <span class="sr-only">{title}</span>
-            </LinkButton>
-          ) : null
-        )}
-      </div>
-    </div>
-  )
-}
+<div class="flex flex-none flex-col items-center justify-center gap-2 md:items-start">
+  <span class="italic">{t.post.sharePostIntro}</span>
+  <div class="flex flex-wrap items-center gap-3">
+    <button
+      type="button"
+      class="border-border bg-background hover:border-accent hover:text-accent inline-flex items-center rounded-full border px-3 py-1.5 text-sm transition-colors"
+      data-copy-link
+      data-url={pageUrl}
+      title="复制文章链接"
+      aria-label="复制文章链接"
+    >
+      <span>复制链接</span>
+    </button>
+    <button
+      type="button"
+      class="border-border bg-background hover:border-accent hover:text-accent inline-flex items-center rounded-full border px-3 py-1.5 text-sm transition-colors"
+      data-export-image
+      title="生成长图"
+      aria-label="生成长图"
+    >
+      <span>生成长图</span>
+    </button>
+  </div>
+  <span class="text-muted-foreground min-h-[1rem] text-xs" data-share-feedback></span>
+</div>
+
+<div
+  id="share-export-root"
+  class="bg-background text-foreground w-[960px] p-10"
+  style="position: fixed; left: -10000px; top: 0; z-index: -1;"
+  aria-hidden="true"
+>
+  <div class="border-border mb-8 border-b pb-6">
+    <p class="text-muted-foreground text-sm">{config.site.title}</p>
+    <div id="share-export-title" class="text-accent mt-3 text-4xl font-bold leading-tight"></div>
+    <div id="share-export-meta" class="text-muted-foreground mt-4 text-base"></div>
+    <ul id="share-export-tags" class="mt-5 flex list-none flex-wrap gap-3 pl-0"></ul>
+    <p class="text-muted-foreground mt-6 text-sm break-all">{pageUrl}</p>
+  </div>
+  <div
+    id="share-export-content"
+    class="app-prose max-w-none prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+  ></div>
+</div>
+
+<script>
+  import { toPng } from "html-to-image";
+
+  function setupShareTools() {
+    const copyButton = document.querySelector("[data-copy-link]");
+    const exportButton = document.querySelector("[data-export-image]");
+    const feedback = document.querySelector("[data-share-feedback]");
+
+    const setFeedback = (message: string) => {
+      if (feedback) feedback.textContent = message;
+      window.setTimeout(() => {
+        if (feedback && feedback.textContent === message) feedback.textContent = "";
+      }, 2200);
+    };
+
+    if (copyButton instanceof HTMLButtonElement) {
+      copyButton.onclick = async () => {
+        const url = copyButton.dataset.url;
+        if (!url) return;
+
+        try {
+          await navigator.clipboard.writeText(url);
+          setFeedback("链接已复制");
+        } catch {
+          setFeedback("复制失败");
+        }
+      };
+    }
+
+    if (exportButton instanceof HTMLButtonElement) {
+      exportButton.onclick = async () => {
+        const exportRoot = document.querySelector("#share-export-root");
+        const title = document.querySelector("#share-source-title");
+        const meta = document.querySelector("#share-source-meta");
+        const tags = document.querySelector("#share-source-tags");
+        const article = document.querySelector("#article");
+        const exportTitle = document.querySelector("#share-export-title");
+        const exportMeta = document.querySelector("#share-export-meta");
+        const exportTags = document.querySelector("#share-export-tags");
+        const exportContent = document.querySelector("#share-export-content");
+
+        if (
+          !(exportRoot instanceof HTMLElement) ||
+          !(title instanceof HTMLElement) ||
+          !(article instanceof HTMLElement) ||
+          !(exportTitle instanceof HTMLElement) ||
+          !(exportMeta instanceof HTMLElement) ||
+          !(exportTags instanceof HTMLElement) ||
+          !(exportContent instanceof HTMLElement)
+        ) {
+          setFeedback("生成失败");
+          return;
+        }
+
+        exportButton.disabled = true;
+        setFeedback("长图生成中...");
+
+        exportTitle.innerHTML = "";
+        exportMeta.innerHTML = "";
+        exportTags.innerHTML = "";
+        exportContent.innerHTML = "";
+
+        exportTitle.appendChild(title.cloneNode(true));
+
+        if (meta instanceof HTMLElement) {
+          const metaClone = meta.cloneNode(true) as HTMLElement;
+          metaClone.querySelectorAll("svg").forEach((node: Element) => node.remove());
+          exportMeta.appendChild(metaClone);
+        }
+
+        if (tags instanceof HTMLElement) {
+          const tagsClone = tags.cloneNode(true) as HTMLElement;
+          exportTags.append(...Array.from(tagsClone.children));
+        }
+
+        const articleClone = article.cloneNode(true) as HTMLElement;
+        articleClone
+          .querySelectorAll(".copy-code, .heading-link, script")
+          .forEach((node: Element) => node.remove());
+        exportContent.appendChild(articleClone);
+
+        const style = window.getComputedStyle(document.documentElement);
+        const backgroundColor = style.getPropertyValue("--background").trim() || "#ffffff";
+        const previousStyle = exportRoot.getAttribute("style") || "";
+        exportRoot.setAttribute(
+          "style",
+          "position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none;"
+        );
+
+        try {
+          const dataUrl = await toPng(exportRoot, {
+            cacheBust: true,
+            pixelRatio: 2,
+            backgroundColor,
+          });
+          const link = document.createElement("a");
+          const slug = window.location.pathname.split("/").filter(Boolean).pop() || "post";
+          link.download = `${slug}-longshot.png`;
+          link.href = dataUrl;
+          link.click();
+          setFeedback("长图已下载");
+        } catch (error) {
+          console.error("Failed to export image:", error);
+          setFeedback("生成失败");
+        } finally {
+          exportRoot.setAttribute("style", previousStyle);
+          exportButton.disabled = false;
+        }
+      };
+    }
+  }
+
+  document.addEventListener("astro:page-load", setupShareTools);
+  setupShareTools();
+</script>

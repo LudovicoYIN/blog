@@ -34,8 +34,8 @@ export default {
     allPosts: "全部文章",
   },
   footer: {
-    copyright: "版权所有",
-    allRightsReserved: "保留所有权利。",
+    copyright: "©",
+    allRightsReserved: "Ludovico. 用 Astro 构建。",
   },
   pages: {
     tagTitle: "标签",

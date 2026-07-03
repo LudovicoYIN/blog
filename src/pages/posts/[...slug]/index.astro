@@ -111,13 +111,14 @@ const ogImage = ogImageUrl
     data-pagefind-body
   >
     <h1
+      id="share-source-title"
       style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
       class="text-accent inline-block text-2xl font-bold sm:text-3xl"
     >
       {title}
     </h1>
 
-    <div class="my-2 flex items-center gap-2">
+    <div id="share-source-meta" class="my-2 flex items-center gap-2">
       <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
       <span
         aria-hidden="true"
@@ -148,22 +149,9 @@ const ogImage = ogImageUrl
 
     <BackToTopButton />
 
-    <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
+    <ul id="share-source-tags" class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
       {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />)}
     </ul>
-
-    <!-- 不蒜子 counters -->
-    <div class="mt-2 mb-6 flex flex-wrap gap-4 text-sm text-muted-foreground">
-      <span id="busuanzi_container_page_pv">
-        📄 本文阅读：<span id="busuanzi_value_page_pv"></span>
-      </span>
-      <span id="busuanzi_container_site_pv">
-        🌐 全站总览：<span id="busuanzi_value_site_pv"></span>
-      </span>
-      <span id="busuanzi_container_site_uv">
-        👥 访客总数：<span id="busuanzi_value_site_uv"></span>
-      </span>
-    </div>
 
     <ShareLinks />
 
