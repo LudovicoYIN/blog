@@ -61,8 +61,6 @@ const pageUrl = Astro.url.href;
         >
           <option value="720">720px · 轻量分享</option>
           <option value="960" selected>960px · 长文默认</option>
-          <option value="1080">1080px · 小红书/Instagram</option>
-          <option value="1200">1200px · 高清长图</option>
         </select>
       </label>
 
@@ -154,28 +152,6 @@ const pageUrl = Astro.url.href;
     --export-block-gap: 1.25em;
   }
 
-  .share-export-card[data-export-card-size="1080"] {
-    --export-pad: 58px;
-    --export-title-size: 42px;
-    --export-h2-size: 30px;
-    --export-h3-size: 23px;
-    --export-body-size: 18px;
-    --export-code-size: 13.5px;
-    --export-line-height: 1.78;
-    --export-block-gap: 1.3em;
-  }
-
-  .share-export-card[data-export-card-size="1200"] {
-    --export-pad: 68px;
-    --export-title-size: 46px;
-    --export-h2-size: 32px;
-    --export-h3-size: 24px;
-    --export-body-size: 19px;
-    --export-code-size: 14px;
-    --export-line-height: 1.8;
-    --export-block-gap: 1.35em;
-  }
-
   .share-export-header {
     margin-bottom: calc(var(--export-pad) * 0.62);
     border-bottom: 1px solid var(--border);
@@ -237,6 +213,12 @@ const pageUrl = Astro.url.href;
     font-size: var(--export-body-size);
     line-height: var(--export-line-height);
     color: var(--foreground);
+  }
+
+  .share-export-content :global(.share-export-article) {
+    width: 100%;
+    max-width: none;
+    margin: 0;
   }
 
   .share-export-content :global(h1),
@@ -474,6 +456,8 @@ const pageUrl = Astro.url.href;
     }
 
     const articleClone = article.cloneNode(true) as HTMLElement;
+    articleClone.removeAttribute("id");
+    articleClone.className = "share-export-article";
     articleClone
       .querySelectorAll(".copy-code, .heading-link, script")
       .forEach((node: Element) => node.remove());
