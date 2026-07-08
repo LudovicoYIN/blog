@@ -54,6 +54,20 @@ const pageUrl = Astro.url.href;
 <script>
   import { toPng } from "html-to-image";
 
+  async function waitForImages(root: HTMLElement) {
+    const images = Array.from(root.querySelectorAll("img"));
+    await Promise.all(
+      images.map(async image => {
+        if (image.complete && image.naturalWidth > 0) return;
+        try {
+          await image.decode();
+        } catch {
+          // Ignore a single failed image so text export can still proceed.
+        }
+      })
+    );
+  }
+
   function setupShareTools() {
     const copyButton = document.querySelector("[data-copy-link]");
     const exportButton = document.querySelector("[data-export-image]");
@@ -139,13 +153,26 @@ const pageUrl = Astro.url.href;
 
         const style = window.getComputedStyle(document.documentElement);
         const backgroundColor = style.getPropertyValue("--background").trim() || "#ffffff";
+        const foregroundColor = style.getPropertyValue("--foreground").trim() || "#111827";
         const previousStyle = exportRoot.getAttribute("style") || "";
         exportRoot.setAttribute(
           "style",
-          "position: fixed; left: 0; top: 0; z-index: -1; opacity: 0; pointer-events: none;"
+          [
+            "position: fixed",
+            "left: -10000px",
+            "top: 0",
+            "z-index: 0",
+            "opacity: 1",
+            "pointer-events: none",
+            "width: 960px",
+            `background-color: ${backgroundColor}`,
+            `color: ${foregroundColor}`,
+          ].join("; ")
         );
 
         try {
+          await waitForImages(exportRoot);
+          await new Promise(requestAnimationFrame);
           const dataUrl = await toPng(exportRoot, {
             cacheBust: true,
             pixelRatio: 2,
