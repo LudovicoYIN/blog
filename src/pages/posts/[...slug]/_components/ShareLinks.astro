@@ -35,7 +35,7 @@ const pageUrl = Astro.url.href;
 <div
   id="share-export-root"
   class="bg-background text-foreground w-[960px] p-10"
-  style="position: fixed; left: -10000px; top: 0; z-index: -1;"
+  style="position: fixed; left: 0; top: 0; z-index: -1; opacity: 0; pointer-events: none;"
   aria-hidden="true"
 >
   <div class="border-border mb-8 border-b pb-6">
@@ -137,7 +137,7 @@ const pageUrl = Astro.url.href;
         const previousStyle = exportRoot.getAttribute("style") || "";
         exportRoot.setAttribute(
           "style",
-          "position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none;"
+          "position: fixed; left: 0; top: 0; z-index: -1; opacity: 0; pointer-events: none;"
         );
 
         try {
