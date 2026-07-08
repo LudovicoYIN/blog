@@ -33,26 +33,110 @@ const pageUrl = Astro.url.href;
 </div>
 
 <div
-  id="share-export-root"
-  class="bg-background text-foreground w-[960px] p-10"
-  style="position: fixed; left: 0; top: 0; z-index: -1; opacity: 0; pointer-events: none;"
+  id="share-export-modal"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-black/55 p-4 backdrop-blur-sm"
   aria-hidden="true"
 >
-  <div class="border-border mb-8 border-b pb-6">
-    <p class="text-muted-foreground text-sm">{config.site.title}</p>
-    <div id="share-export-title" class="text-accent mt-3 text-4xl font-bold leading-tight"></div>
-    <div id="share-export-meta" class="text-muted-foreground mt-4 text-base"></div>
-    <ul id="share-export-tags" class="mt-5 flex list-none flex-wrap gap-3 pl-0"></ul>
-    <p class="text-muted-foreground mt-6 text-sm break-all">{pageUrl}</p>
+  <div class="bg-background border-border flex max-h-[92vh] w-full max-w-6xl flex-col rounded border shadow-xl">
+    <div class="border-border flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3">
+      <div>
+        <h2 class="text-foreground text-base font-semibold">导出长图</h2>
+        <p class="text-muted-foreground text-xs">选择社交媒体尺寸和样式后导出 PNG</p>
+      </div>
+      <button
+        type="button"
+        class="border-border hover:border-accent hover:text-accent rounded border px-3 py-1.5 text-sm"
+        data-export-close
+      >
+        关闭
+      </button>
+    </div>
+
+    <div class="border-border flex flex-wrap items-end gap-4 border-b px-4 py-3">
+      <label class="flex flex-col gap-1 text-sm">
+        <span class="text-muted-foreground text-xs">尺寸</span>
+        <select
+          class="border-border bg-background text-foreground rounded border px-3 py-2 text-sm"
+          data-export-size
+        >
+          <option value="720">720px · 轻量分享</option>
+          <option value="960" selected>960px · 长文默认</option>
+          <option value="1080">1080px · 小红书/Instagram</option>
+          <option value="1200">1200px · 高清长图</option>
+        </select>
+      </label>
+
+      <label class="flex flex-col gap-1 text-sm">
+        <span class="text-muted-foreground text-xs">样式</span>
+        <select
+          class="border-border bg-background text-foreground rounded border px-3 py-2 text-sm"
+          data-export-theme
+        >
+          <option value="light" selected>浅色论文风</option>
+          <option value="dark">深色技术风</option>
+          <option value="minimal">简洁白底</option>
+        </select>
+      </label>
+
+      <button
+        type="button"
+        class="bg-accent text-accent-foreground rounded px-4 py-2 text-sm font-medium"
+        data-export-download
+      >
+        导出 PNG
+      </button>
+    </div>
+
+    <div class="min-h-0 flex-1 overflow-auto p-4">
+      <div
+        id="share-export-root"
+        class="bg-background text-foreground mx-auto w-[960px] p-10 shadow-lg"
+      >
+        <div class="border-border mb-8 border-b pb-6">
+          <p class="text-muted-foreground text-sm">{config.site.title}</p>
+          <div id="share-export-title" class="text-accent mt-3 text-4xl font-bold leading-tight"></div>
+          <div id="share-export-meta" class="text-muted-foreground mt-4 text-base"></div>
+          <ul id="share-export-tags" class="mt-5 flex list-none flex-wrap gap-3 pl-0"></ul>
+          <p class="text-muted-foreground mt-6 text-sm break-all">{pageUrl}</p>
+        </div>
+        <div
+          id="share-export-content"
+          class="app-prose max-w-none prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+        ></div>
+      </div>
+    </div>
   </div>
-  <div
-    id="share-export-content"
-    class="app-prose max-w-none prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
-  ></div>
 </div>
 
 <script>
   import { toPng } from "html-to-image";
+
+  const exportThemes = {
+    light: {
+      background: "#f7f8fb",
+      foreground: "#1f2937",
+      accent: "#3b82f6",
+      muted: "#e5e7eb",
+      mutedForeground: "#6b7280",
+      border: "#dbe3ee",
+    },
+    dark: {
+      background: "#0f172a",
+      foreground: "#e5e7eb",
+      accent: "#60a5fa",
+      muted: "#1e293b",
+      mutedForeground: "#94a3b8",
+      border: "#334155",
+    },
+    minimal: {
+      background: "#ffffff",
+      foreground: "#111827",
+      accent: "#2563eb",
+      muted: "#f3f4f6",
+      mutedForeground: "#6b7280",
+      border: "#e5e7eb",
+    },
+  } as const;
 
   async function waitForImages(root: HTMLElement) {
     const images = Array.from(root.querySelectorAll("img"));
@@ -68,9 +152,81 @@ const pageUrl = Astro.url.href;
     );
   }
 
+  function applyExportSettings(root: HTMLElement, width: string, themeName: string) {
+    const theme = exportThemes[themeName as keyof typeof exportThemes] ?? exportThemes.light;
+    root.style.width = `${width}px`;
+    root.style.setProperty("--background", theme.background);
+    root.style.setProperty("--foreground", theme.foreground);
+    root.style.setProperty("--accent", theme.accent);
+    root.style.setProperty("--muted", theme.muted);
+    root.style.setProperty("--muted-foreground", theme.mutedForeground);
+    root.style.setProperty("--border", theme.border);
+    root.style.backgroundColor = theme.background;
+    root.style.color = theme.foreground;
+  }
+
+  function populateExportContent() {
+    const title = document.querySelector("#share-source-title");
+    const meta = document.querySelector("#share-source-meta");
+    const tags = document.querySelector("#share-source-tags");
+    const article = document.querySelector("#article");
+    const exportTitle = document.querySelector("#share-export-title");
+    const exportMeta = document.querySelector("#share-export-meta");
+    const exportTags = document.querySelector("#share-export-tags");
+    const exportContent = document.querySelector("#share-export-content");
+
+    if (
+      !(title instanceof HTMLElement) ||
+      !(article instanceof HTMLElement) ||
+      !(exportTitle instanceof HTMLElement) ||
+      !(exportMeta instanceof HTMLElement) ||
+      !(exportTags instanceof HTMLElement) ||
+      !(exportContent instanceof HTMLElement)
+    ) {
+      return false;
+    }
+
+    exportTitle.innerHTML = "";
+    exportMeta.innerHTML = "";
+    exportTags.innerHTML = "";
+    exportContent.innerHTML = "";
+
+    exportTitle.appendChild(title.cloneNode(true));
+
+    if (meta instanceof HTMLElement) {
+      const metaClone = meta.cloneNode(true) as HTMLElement;
+      metaClone.querySelectorAll("svg").forEach((node: Element) => node.remove());
+      exportMeta.appendChild(metaClone);
+    }
+
+    if (tags instanceof HTMLElement) {
+      const tagsClone = tags.cloneNode(true) as HTMLElement;
+      exportTags.append(...Array.from(tagsClone.children));
+    }
+
+    const articleClone = article.cloneNode(true) as HTMLElement;
+    articleClone
+      .querySelectorAll(".copy-code, .heading-link, script")
+      .forEach((node: Element) => node.remove());
+    articleClone.querySelectorAll("img").forEach((image: HTMLImageElement) => {
+      const src = image.getAttribute("src");
+      if (!src || src.startsWith("data:") || /^https?:\/\//.test(src)) return;
+      image.src = new URL(src, window.location.origin).href;
+    });
+    exportContent.appendChild(articleClone);
+
+    return true;
+  }
+
   function setupShareTools() {
     const copyButton = document.querySelector("[data-copy-link]");
     const exportButton = document.querySelector("[data-export-image]");
+    const modal = document.querySelector("#share-export-modal");
+    const closeButton = document.querySelector("[data-export-close]");
+    const downloadButton = document.querySelector("[data-export-download]");
+    const sizeSelect = document.querySelector("[data-export-size]");
+    const themeSelect = document.querySelector("[data-export-theme]");
+    const exportRoot = document.querySelector("#share-export-root");
     const feedback = document.querySelector("[data-share-feedback]");
 
     const setFeedback = (message: string) => {
@@ -94,88 +250,82 @@ const pageUrl = Astro.url.href;
       };
     }
 
-    if (exportButton instanceof HTMLButtonElement) {
-      exportButton.onclick = async () => {
-        const exportRoot = document.querySelector("#share-export-root");
-        const title = document.querySelector("#share-source-title");
-        const meta = document.querySelector("#share-source-meta");
-        const tags = document.querySelector("#share-source-tags");
-        const article = document.querySelector("#article");
-        const exportTitle = document.querySelector("#share-export-title");
-        const exportMeta = document.querySelector("#share-export-meta");
-        const exportTags = document.querySelector("#share-export-tags");
-        const exportContent = document.querySelector("#share-export-content");
+    const refreshPreview = () => {
+      if (
+        !(exportRoot instanceof HTMLElement) ||
+        !(sizeSelect instanceof HTMLSelectElement) ||
+        !(themeSelect instanceof HTMLSelectElement)
+      ) {
+        return;
+      }
+      applyExportSettings(exportRoot, sizeSelect.value, themeSelect.value);
+    };
 
-        if (
-          !(exportRoot instanceof HTMLElement) ||
-          !(title instanceof HTMLElement) ||
-          !(article instanceof HTMLElement) ||
-          !(exportTitle instanceof HTMLElement) ||
-          !(exportMeta instanceof HTMLElement) ||
-          !(exportTags instanceof HTMLElement) ||
-          !(exportContent instanceof HTMLElement)
-        ) {
+    const closeModal = () => {
+      if (!(modal instanceof HTMLElement)) return;
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    };
+
+    const openModal = () => {
+      if (!(modal instanceof HTMLElement)) return;
+      if (!populateExportContent()) {
+        setFeedback("生成失败");
+        return;
+      }
+      refreshPreview();
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    };
+
+    if (exportButton instanceof HTMLButtonElement) {
+      exportButton.onclick = openModal;
+    }
+
+    if (closeButton instanceof HTMLButtonElement) {
+      closeButton.onclick = closeModal;
+    }
+
+    if (modal instanceof HTMLElement) {
+      modal.addEventListener("click", event => {
+        if (event.target === modal) closeModal();
+      });
+    }
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeModal();
+    });
+
+    if (sizeSelect instanceof HTMLSelectElement) {
+      sizeSelect.onchange = refreshPreview;
+    }
+
+    if (themeSelect instanceof HTMLSelectElement) {
+      themeSelect.onchange = refreshPreview;
+    }
+
+    if (downloadButton instanceof HTMLButtonElement) {
+      downloadButton.onclick = async () => {
+        if (!(exportRoot instanceof HTMLElement)) {
           setFeedback("生成失败");
           return;
         }
 
-        exportButton.disabled = true;
+        downloadButton.disabled = true;
         setFeedback("长图生成中...");
-
-        exportTitle.innerHTML = "";
-        exportMeta.innerHTML = "";
-        exportTags.innerHTML = "";
-        exportContent.innerHTML = "";
-
-        exportTitle.appendChild(title.cloneNode(true));
-
-        if (meta instanceof HTMLElement) {
-          const metaClone = meta.cloneNode(true) as HTMLElement;
-          metaClone.querySelectorAll("svg").forEach((node: Element) => node.remove());
-          exportMeta.appendChild(metaClone);
-        }
-
-        if (tags instanceof HTMLElement) {
-          const tagsClone = tags.cloneNode(true) as HTMLElement;
-          exportTags.append(...Array.from(tagsClone.children));
-        }
-
-        const articleClone = article.cloneNode(true) as HTMLElement;
-        articleClone
-          .querySelectorAll(".copy-code, .heading-link, script")
-          .forEach((node: Element) => node.remove());
-        articleClone.querySelectorAll("img").forEach((image: HTMLImageElement) => {
-          const src = image.getAttribute("src");
-          if (!src || src.startsWith("data:") || /^https?:\/\//.test(src)) return;
-          image.src = new URL(src, window.location.origin).href;
-        });
-        exportContent.appendChild(articleClone);
-
-        const style = window.getComputedStyle(document.documentElement);
-        const backgroundColor = style.getPropertyValue("--background").trim() || "#ffffff";
-        const foregroundColor = style.getPropertyValue("--foreground").trim() || "#111827";
-        const previousStyle = exportRoot.getAttribute("style") || "";
-        exportRoot.setAttribute(
-          "style",
-          [
-            "position: fixed",
-            "left: 0",
-            "top: 0",
-            "z-index: -1",
-            "opacity: 1",
-            "pointer-events: none",
-            "width: 960px",
-            `background-color: ${backgroundColor}`,
-            `color: ${foregroundColor}`,
-          ].join("; ")
-        );
-
+        refreshPreview();
+        const backgroundColor =
+          exportRoot.style.getPropertyValue("--background").trim() || "#ffffff";
         try {
           await waitForImages(exportRoot);
           await new Promise(requestAnimationFrame);
           const dataUrl = await toPng(exportRoot, {
             cacheBust: true,
-            pixelRatio: 2,
+            pixelRatio: 1,
             backgroundColor,
             skipFonts: true,
           });
@@ -189,8 +339,7 @@ const pageUrl = Astro.url.href;
           console.error("Failed to export image:", error);
           setFeedback("生成失败");
         } finally {
-          exportRoot.setAttribute("style", previousStyle);
-          exportButton.disabled = false;
+          downloadButton.disabled = false;
         }
       };
     }
