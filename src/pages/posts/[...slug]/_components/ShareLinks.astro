@@ -89,24 +89,273 @@ const pageUrl = Astro.url.href;
 
     <div class="min-h-0 flex-1 overflow-auto p-4">
       <div
-        id="share-export-root"
-        class="bg-background text-foreground mx-auto w-[960px] p-10 shadow-lg"
+        id="share-export-stage"
+        class="mx-auto origin-top"
       >
-        <div class="border-border mb-8 border-b pb-6">
-          <p class="text-muted-foreground text-sm">{config.site.title}</p>
-          <div id="share-export-title" class="text-accent mt-3 text-4xl font-bold leading-tight"></div>
-          <div id="share-export-meta" class="text-muted-foreground mt-4 text-base"></div>
-          <ul id="share-export-tags" class="mt-5 flex list-none flex-wrap gap-3 pl-0"></ul>
-          <p class="text-muted-foreground mt-6 text-sm break-all">{pageUrl}</p>
+      <div
+        id="share-export-root"
+        class="share-export-card bg-background text-foreground w-[960px] shadow-lg"
+      >
+        <div class="share-export-header">
+          <p class="share-export-brand">{config.site.title}</p>
+          <div id="share-export-title" class="share-export-title"></div>
+          <div id="share-export-meta" class="share-export-meta"></div>
+          <ul id="share-export-tags" class="share-export-tags"></ul>
+          <p class="share-export-url">{pageUrl}</p>
         </div>
         <div
           id="share-export-content"
-          class="app-prose max-w-none prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+          class="share-export-content app-prose max-w-none"
         ></div>
+      </div>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+  #share-export-stage {
+    width: var(--export-width, 960px);
+  }
+
+  .share-export-card {
+    --export-pad: 48px;
+    --export-title-size: 38px;
+    --export-h2-size: 27px;
+    --export-h3-size: 21px;
+    --export-body-size: 17px;
+    --export-code-size: 13px;
+    --export-line-height: 1.78;
+    --export-block-gap: 1.25em;
+    padding: var(--export-pad);
+    background: var(--background);
+    color: var(--foreground);
+  }
+
+  .share-export-card[data-export-card-size="720"] {
+    --export-pad: 34px;
+    --export-title-size: 28px;
+    --export-h2-size: 22px;
+    --export-h3-size: 18px;
+    --export-body-size: 14.5px;
+    --export-code-size: 11.5px;
+    --export-line-height: 1.72;
+    --export-block-gap: 1.1em;
+  }
+
+  .share-export-card[data-export-card-size="960"] {
+    --export-pad: 48px;
+    --export-title-size: 38px;
+    --export-h2-size: 27px;
+    --export-h3-size: 21px;
+    --export-body-size: 17px;
+    --export-code-size: 13px;
+    --export-line-height: 1.78;
+    --export-block-gap: 1.25em;
+  }
+
+  .share-export-card[data-export-card-size="1080"] {
+    --export-pad: 58px;
+    --export-title-size: 42px;
+    --export-h2-size: 30px;
+    --export-h3-size: 23px;
+    --export-body-size: 18px;
+    --export-code-size: 13.5px;
+    --export-line-height: 1.78;
+    --export-block-gap: 1.3em;
+  }
+
+  .share-export-card[data-export-card-size="1200"] {
+    --export-pad: 68px;
+    --export-title-size: 46px;
+    --export-h2-size: 32px;
+    --export-h3-size: 24px;
+    --export-body-size: 19px;
+    --export-code-size: 14px;
+    --export-line-height: 1.8;
+    --export-block-gap: 1.35em;
+  }
+
+  .share-export-header {
+    margin-bottom: calc(var(--export-pad) * 0.62);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: calc(var(--export-pad) * 0.48);
+  }
+
+  .share-export-brand,
+  .share-export-meta,
+  .share-export-url {
+    color: var(--muted-foreground);
+  }
+
+  .share-export-brand {
+    margin: 0;
+    font-size: calc(var(--export-body-size) * 0.9);
+  }
+
+  .share-export-title {
+    margin-top: 0.38em;
+    color: var(--accent);
+    font-size: var(--export-title-size);
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.18;
+  }
+
+  .share-export-title :global(*) {
+    color: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  .share-export-meta {
+    margin-top: 1em;
+    font-size: calc(var(--export-body-size) * 0.95);
+  }
+
+  .share-export-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7em;
+    margin: 1.1em 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: calc(var(--export-body-size) * 0.9);
+  }
+
+  .share-export-tags :global(a) {
+    color: var(--foreground);
+  }
+
+  .share-export-url {
+    margin: 1.3em 0 0;
+    word-break: break-all;
+    font-size: calc(var(--export-body-size) * 0.82);
+  }
+
+  .share-export-content {
+    font-size: var(--export-body-size);
+    line-height: var(--export-line-height);
+    color: var(--foreground);
+  }
+
+  .share-export-content :global(h1),
+  .share-export-content :global(h2),
+  .share-export-content :global(h3),
+  .share-export-content :global(h4) {
+    color: var(--foreground);
+    letter-spacing: 0;
+    line-height: 1.35;
+  }
+
+  .share-export-content :global(h2) {
+    margin: 1.75em 0 0.72em;
+    font-size: var(--export-h2-size);
+    font-weight: 800;
+  }
+
+  .share-export-content :global(h3) {
+    margin: 1.45em 0 0.62em;
+    font-size: var(--export-h3-size);
+    font-style: italic;
+    font-weight: 700;
+  }
+
+  .share-export-content :global(p),
+  .share-export-content :global(ol),
+  .share-export-content :global(ul),
+  .share-export-content :global(table),
+  .share-export-content :global(blockquote) {
+    margin-top: var(--export-block-gap);
+    margin-bottom: var(--export-block-gap);
+    color: var(--foreground);
+  }
+
+  .share-export-content :global(li) {
+    margin: 0.35em 0;
+    padding-left: 0.15em;
+  }
+
+  .share-export-content :global(li::marker) {
+    color: var(--accent);
+  }
+
+  .share-export-content :global(strong) {
+    color: var(--foreground);
+    font-weight: 800;
+  }
+
+  .share-export-content :global(a) {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  .share-export-content :global(img) {
+    display: block;
+    max-width: min(100%, calc(var(--export-width, 960px) - var(--export-pad) * 2));
+    height: auto;
+    margin: 1.8em auto;
+    border: 1px solid var(--border);
+    background: #fff;
+  }
+
+  .share-export-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: calc(var(--export-body-size) * 0.88);
+  }
+
+  .share-export-content :global(th),
+  .share-export-content :global(td) {
+    border: 1px solid var(--border);
+    padding: 0.62em 0.72em;
+    color: var(--foreground);
+  }
+
+  .share-export-content :global(th) {
+    background: var(--muted);
+    font-weight: 750;
+  }
+
+  .share-export-content :global(code) {
+    border-radius: 4px;
+    background: var(--muted);
+    color: var(--foreground);
+    font-size: calc(var(--export-code-size) * 0.98);
+    padding: 0.14em 0.36em;
+  }
+
+  .share-export-content :global(pre) {
+    margin: 1.35em 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 1em 1.12em;
+    overflow: visible;
+    white-space: pre-wrap;
+    font-size: var(--export-code-size);
+    line-height: 1.62;
+  }
+
+  .share-export-content :global(pre code),
+  .share-export-content :global(.astro-code),
+  .share-export-content :global(.astro-code span) {
+    background: transparent !important;
+    color: var(--code-fg) !important;
+    font-size: inherit;
+  }
+
+  .share-export-content :global(blockquote) {
+    border-left: 4px solid var(--accent);
+    padding-left: 1em;
+    color: var(--muted-foreground);
+  }
+
+  .share-export-card[data-export-card-theme="minimal"] {
+    box-shadow: none;
+  }
+</style>
 
 <script>
   import { toPng } from "html-to-image";
@@ -119,6 +368,8 @@ const pageUrl = Astro.url.href;
       muted: "#e5e7eb",
       mutedForeground: "#6b7280",
       border: "#dbe3ee",
+      codeBg: "#eef2f7",
+      codeFg: "#111827",
     },
     dark: {
       background: "#0f172a",
@@ -127,6 +378,8 @@ const pageUrl = Astro.url.href;
       muted: "#1e293b",
       mutedForeground: "#94a3b8",
       border: "#334155",
+      codeBg: "#111827",
+      codeFg: "#e5e7eb",
     },
     minimal: {
       background: "#ffffff",
@@ -135,6 +388,8 @@ const pageUrl = Astro.url.href;
       muted: "#f3f4f6",
       mutedForeground: "#6b7280",
       border: "#e5e7eb",
+      codeBg: "#f6f7f9",
+      codeFg: "#111827",
     },
   } as const;
 
@@ -154,15 +409,29 @@ const pageUrl = Astro.url.href;
 
   function applyExportSettings(root: HTMLElement, width: string, themeName: string) {
     const theme = exportThemes[themeName as keyof typeof exportThemes] ?? exportThemes.light;
+    const stage = document.querySelector("#share-export-stage");
     root.style.width = `${width}px`;
+    root.style.setProperty("--export-width", `${width}px`);
     root.style.setProperty("--background", theme.background);
     root.style.setProperty("--foreground", theme.foreground);
     root.style.setProperty("--accent", theme.accent);
     root.style.setProperty("--muted", theme.muted);
     root.style.setProperty("--muted-foreground", theme.mutedForeground);
     root.style.setProperty("--border", theme.border);
+    root.style.setProperty("--code-bg", theme.codeBg);
+    root.style.setProperty("--code-fg", theme.codeFg);
     root.style.backgroundColor = theme.background;
     root.style.color = theme.foreground;
+    root.dataset.exportCardSize = width;
+    root.dataset.exportCardTheme = themeName;
+
+    if (stage instanceof HTMLElement) {
+      const maxPreviewWidth = Math.min(window.innerWidth - 96, 1120);
+      const scale = Math.min(1, maxPreviewWidth / Number(width));
+      stage.style.setProperty("--export-width", `${width}px`);
+      stage.style.transform = `scale(${scale})`;
+      stage.style.marginBottom = `${root.offsetHeight * (scale - 1)}px`;
+    }
   }
 
   function populateExportContent() {
