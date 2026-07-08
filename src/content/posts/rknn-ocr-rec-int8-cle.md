@@ -24,7 +24,7 @@ description: 记录一次 OCR recognition presoftmax 模型在 RKNN W8A8 量化�
 
 ## 实验结果
 
-![RKNN OCR Rec INT8 CLE 对比](/images/rknn-ocr-rec-int8-cle-compare.png)
+![RKNN OCR Rec INT8 CLE 对比](/blog/images/rknn-ocr-rec-int8-cle-compare.png)
 
 ### w320
 

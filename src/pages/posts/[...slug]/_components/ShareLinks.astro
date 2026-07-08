@@ -130,6 +130,11 @@ const pageUrl = Astro.url.href;
         articleClone
           .querySelectorAll(".copy-code, .heading-link, script")
           .forEach((node: Element) => node.remove());
+        articleClone.querySelectorAll("img").forEach((image: HTMLImageElement) => {
+          const src = image.getAttribute("src");
+          if (!src || src.startsWith("data:") || /^https?:\/\//.test(src)) return;
+          image.src = new URL(src, window.location.origin).href;
+        });
         exportContent.appendChild(articleClone);
 
         const style = window.getComputedStyle(document.documentElement);
@@ -145,6 +150,7 @@ const pageUrl = Astro.url.href;
             cacheBust: true,
             pixelRatio: 2,
             backgroundColor,
+            skipFonts: true,
           });
           const link = document.createElement("a");
           const slug = window.location.pathname.split("/").filter(Boolean).pop() || "post";

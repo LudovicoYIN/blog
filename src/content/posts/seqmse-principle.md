@@ -1,6 +1,6 @@
 ---
 author: Ludovico
-pubDatetime: 2026-07-08T12:00:00Z
+pubDatetime: 2026-07-08T09:30:00+08:00
 title: SeqMSE 原理：用输出重构误差选择量化 Encoding
 featured: false
 draft: false
@@ -47,7 +47,7 @@ SeqMSE 换了一个目标：不再只问“这个 tensor 的范围是多少”�
 9. 选择 loss 最小的 encoding，并 freeze 当前模块的 weight quantizer。
 10. 继续处理下一层。
 
-![AIMET SeqMSE 总体流程](/images/seqmse/figure_01.png)
+![AIMET SeqMSE 总体流程](/blog/images/seqmse/figure_01.png)
 
 这个过程叫 sequential，是因为它按网络拓扑顺序逐层处理。前面层的 encoding 确定后，会影响后续层看到的 quantized activation 分布。
 
@@ -94,7 +94,7 @@ cand_min = min_tensor / num_candidates * (candidate_idx + 1)
 
 也就是说，SeqMSE 会尝试不同程度地裁剪原始范围。较小范围会牺牲 outlier，换取主体分布更细的量化刻度；较大范围保留 outlier，但主体分布的量化分辨率会下降。
 
-![Candidate range 搜索](/images/seqmse/figure_02.png)
+![Candidate range 搜索](/blog/images/seqmse/figure_02.png)
 
 ## Loss 怎么算
 
@@ -136,7 +136,7 @@ loss = loss_fn(xw, xqwq, reduction="none").sum(0)
 
 对 Linear，AIMET 会按 input channel 方向切 block。每个 block 可以独立计算 reconstruction loss，因此可以为不同 block/channel 选择不同候选。
 
-![Linear block-wise loss](/images/seqmse/figure_03.png)
+![Linear block-wise loss](/blog/images/seqmse/figure_03.png)
 
 直观上：
 
@@ -312,4 +312,3 @@ SeqMSE: 选更好的尺子范围。
 AdaRound: 选更好的取整方向。
 GPTQ: 量化时顺手补偿误差。
 ```
-
