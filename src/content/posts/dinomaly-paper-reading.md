@@ -7,7 +7,6 @@ draft: false
 tags:
   - 论文精读
   - 异常检测
-  - UAD
 description: Dinomaly 用强预训练 ViT 特征、Noisy Bottleneck、Linear Attention 和 Loose Reconstruction，缓解多类别无监督异常检测中的 identity mapping 问题。
 ---
 
