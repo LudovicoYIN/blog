@@ -1,6 +1,6 @@
 ---
 author: Ludovico
-pubDatetime: 2026-07-15T18:00:00+08:00
+pubDatetime: 2026-07-15T09:00:00+08:00
 title: QAIRT 2.42 适配流式多通道语音增强 GRU：从错误 Lowering 到可验证的 HTP 图
 featured: false
 draft: false
