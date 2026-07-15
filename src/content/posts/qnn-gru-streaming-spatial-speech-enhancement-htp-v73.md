@@ -1,19 +1,19 @@
 ---
 author: Ludovico
 pubDatetime: 2026-07-15T09:00:00+08:00
-title: QAIRT 2.42 适配流式多通道语音增强 GRU：从错误 Lowering 到可验证的 HTP 图
+title: QAIRT 2.42 适配 Streaming Spatial Speech Enhancement Network 的 GRU
 featured: false
 draft: false
 tags:
   - 高通
   - 音频模型
   - 模型部署
-description: 基于 bp_streaming20 的一次完整排查：GRU 展开、长序列 native cell、QAIRT 源码开关、Einsum layout bug 与流式 I/O 对齐。
+description: Streaming Spatial Speech Enhancement Network 的 HTP 部署排查：GRU 展开、长序列 native cell、QAIRT 源码开关、Einsum layout bug 与流式 I/O 对齐。
 ---
 
 本文记录 QAIRT 2.42 在 QCS8550 / HTP v73 上适配流式 GRU 网络的过程，覆盖 GRU 语义、图规模、后端执行稳定性和非 GRU 算子的 layout 错误。
 
-模型文件名是 `bp_streaming20_sim.onnx`，但从 ONNX 图看，它更像一个**流式多通道复数频谱语音增强网络**：输入是复数频谱实部/虚部、DOA 与跨帧 cache；前端构造频谱和空间特征，decoder 使用 intra/inter 双路径 RNN，输出增强后的两路复数频谱和新的流式状态。
+从 ONNX 图的输入、节点命名和数据流判断，本文的目标模型可称为 **Streaming Spatial Speech Enhancement Network**：输入是复数频谱实部/虚部、DOA 与跨帧 cache；前端构造频谱和空间特征，decoder 使用 intra/inter 双路径 RNN，输出增强后的两路复数频谱和新的流式状态。
 
 本文所有结论基于 QAIRT `2.42.0.251225`、FP16 图、QCS8550 HTP v73 的实际转换和板端执行。
 
@@ -56,7 +56,7 @@ description: 基于 bp_streaming20 的一次完整排查：GRU 展开、长序�
 
 前者展开一个 cell 的代价有限；后者若按 257 个时间步、双向、两层展开，图规模会急剧增长。
 
-## 默认 GRU lowering 先在 002 模型上暴露问题
+## 默认 GRU lowering 先在 Streaming Acoustic Echo Cancellation Network 上暴露问题
 
 QAIRT 的 ONNX converter 默认先按时间维 unroll，再将 cell 展开为 `MatMul/Add/Sigmoid/Tanh/Mul/Sub` 等基础算子。
 
@@ -68,11 +68,11 @@ converters/common/converter_ir/op_graph_optimizations.py
   expand_gru_op_structure()
 ```
 
-较短的 `002.onnx` 在 HTP 上出现默认 GRU lowering 数值错误。处理方式是在 ONNX 层按 `linear_before_reset=1` 公式手工展开 GRU，并用 ONNX Runtime 验证等价性。
+较短的 **Streaming Acoustic Echo Cancellation Network** 在 HTP 上出现默认 GRU lowering 数值错误。处理方式是在 ONNX 层按 `linear_before_reset=1` 公式手工展开 GRU，并用 ONNX Runtime 验证等价性。
 
-`bp_streaming20` 需要单独评估图规模。
+Streaming Spatial Speech Enhancement Network 需要单独评估图规模。
 
-## 为什么不能把 bp_streaming20 的所有 GRU 都手工展开
+## 为什么不能把 Streaming Spatial Speech Enhancement Network 的所有 GRU 都手工展开
 
 手工展开长双向 GRU 时，每个时间步都要构造 update/reset/candidate 三组门计算，还需要状态串联、slice、concat 和方向处理。两个 `seq=257` 的双向 GRU 展开后会形成数万级基础算子。
 
