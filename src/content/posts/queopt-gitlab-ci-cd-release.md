@@ -1,18 +1,15 @@
 ---
 author: Ludovico
 pubDatetime: 2026-07-20T10:30:00+08:00
-title: QueOpt 的 GitLab CI/CD 与 Python 包发版流程
+title: project 的 GitLab CI/CD 与 Python 包发版流程
 featured: false
 draft: false
 tags:
   - CI/CD
-  - Python
-  - GitLab
-  - 工程化
-description: 记录 QueOpt 从专用 GitLab Runner、部署回归，到 wheel 构建、隔离验证、包发布和 Release 创建的完整流程。
+description: 记录 project 从专用 GitLab Runner、部署回归，到 wheel 构建、隔离验证、包发布和 Release 创建的完整流程。
 ---
 
-QueOpt 的 CI/CD 不是把本地打出来的 wheel 上传一下。部署后端依赖 GPU、交叉编译工具链和厂商 SDK，发布产物还包含编译后的 Python 扩展。流水线需要同时解决两件事：测试环境可复现，发布包确实来自通过验证的构建产物。
+project 的 CI/CD 不是把本地打出来的 wheel 上传一下。部署后端依赖 GPU、交叉编译工具链和厂商 SDK，发布产物还包含编译后的 Python 扩展。流水线需要同时解决两件事：测试环境可复现，发布包确实来自通过验证的构建产物。
 
 最终流程如下：
 
@@ -33,14 +30,14 @@ vX.Y.Z tag
 
 ## 为什么需要专用 Runner
 
-普通共享 Runner 适合单元测试，不适合 QueOpt 的部署回归。部署测试会调用 GPU 环境、Android NDK 和模型转换 SDK；这些依赖体积大、安装受许可限制，也不适合跟着每次 CI 临时下载。
+普通共享 Runner 适合单元测试，不适合 Project 的部署回归。部署测试会调用 GPU 环境、Android NDK 和模型转换 SDK；这些依赖体积大、安装受许可限制，也不适合跟着每次 CI 临时下载。
 
 因此把运行环境拆成两部分：
 
 - Runner 主机保存受控的 SDK 与 NDK，只给需要它们的 CI 容器只读挂载。
 - CI 镜像固定 Python、CUDA、编译器和通用 Python 依赖。
 
-项目任务统一使用一个专用 tag，例如 `queopt-docker`。GitLab 只会把带相同 tag 的任务调度到这个 Runner。这样能避免无关项目占用环境，也不会让缺 SDK 的共享 Runner 接到任务。
+项目任务统一使用一个专用 tag，例如 `project-docker`。GitLab 只会把带相同 tag 的任务调度到这个 Runner。这样能避免无关项目占用环境，也不会让缺 SDK 的共享 Runner 接到任务。
 
 Runner 使用 Docker executor。注册时需要打开 Docker 访问和 GPU 支持，SDK、NDK 的挂载在 Runner 配置中完成，不写进仓库。一个脱敏后的配置结构如下：
 
@@ -50,10 +47,10 @@ Runner 使用 Docker executor。注册时需要打开 Docker 访问和 GPU 支�
   url = "https://gitlab.example.com/"
   token = "<runner-registration-token>"
   executor = "docker"
-  tags = ["queopt-docker"]
+  tags = ["project-docker"]
 
   [runners.docker]
-    image = "registry.example.com/queopt-ci:py310-cuda"
+    image = "registry.example.com/project-ci:py310-cuda"
     privileged = true
     gpus = "all"
     volumes = [
@@ -96,7 +93,7 @@ workflow:
 ```yaml
 run-deploy-tests:
   stage: test
-  image: "registry.example.com/queopt-ci:py310-cuda"
+  image: "registry.example.com/project-ci:py310-cuda"
   script:
     - test -x "$ANDROID_NDK_ROOT/ndk-build"
     - test -d "$QNN_SDK_ROOT"
@@ -117,7 +114,7 @@ tag pipeline 的第一个发布阶段只做一件事：构建并验证 wheel。
 2. 校验 tag 版本和项目版本一致。
 3. 将 wheel 安装到临时目录，从另一个临时工作目录执行部署测试。
 
-第三步最重要。测试进程不能从源码目录导入 `queopt`，否则即使 wheel 漏打文件、动态库缺失或打进了旧代码，测试也可能误用当前 checkout 而通过。隔离目录配合 `--import-mode=importlib`，能确认测试实际加载的是刚刚构建的 wheel。
+第三步最重要。测试进程不能从源码目录导入 `project`，否则即使 wheel 漏打文件、动态库缺失或打进了旧代码，测试也可能误用当前 checkout 而通过。隔离目录配合 `--import-mode=importlib`，能确认测试实际加载的是刚刚构建的 wheel。
 
 ```bash
 python -m build --wheel --outdir dist
@@ -143,7 +140,7 @@ Release 创建遵循不可变原则：首次创建成功即结束；如果该 ta
 
 ```text
 vX.Y.Z
-  -> 构建并验证 queopt-X.Y.Z-<abi>-<platform>.whl
+  -> 构建并验证 project-X.Y.Z-<abi>-<platform>.whl
   -> 上传内部 PyPI Registry
   -> 创建同名 GitLab Release
   -> Release 链接指向该 wheel
