@@ -60,6 +60,12 @@ token norm 很高
 
 ![正常 patch 与 artifact patch 的 token 范数分布](/blog/images/vision-transformers-registers/token-norm-histogram.png)
 
+下面是论文中的一组空间特征响应图。可以看到，模型的响应并不总是和物体轮廓一致，少数背景位置也可能出现非常强的激活；这些位置正是后续 dense prediction 最容易被污染的地方。
+
+![ViT 的空间特征响应图示例](/blog/images/vision-transformers-registers/feature-map-input.png)
+
+![加入 register 后的空间特征响应](/blog/images/vision-transformers-registers/feature-map-register-1.png)
+
 ## 为什么模型会借用背景 patch
 
 Transformer 的 self-attention 允许任意 token 互相读写。某个 token 不一定只保存“它所在 patch 的信息”，也可以成为全局信息交换的中转站。
@@ -193,5 +199,9 @@ ViT 不只是处理 patch token。
 可视化上，加入 registers 后，patch feature 的空间响应也会更规律；原本集中在少数位置的异常响应被削弱，模型的内部工作量转移到 register token 上。
 
 ![加入 registers 前后的 patch feature 对比](/blog/images/vision-transformers-registers/feature-comparison.png)
+
+在另一个图像例子中，响应会集中到物体的主体区域，而不是零散地落在背景上。这种变化正是 register 对空间特征最直观的价值：把模型内部的临时计算和图像位置的表示分开。
+
+![另一个样例的空间特征图](/blog/images/vision-transformers-registers/feature-map-example.png)
 
 所以，“垃圾桶”是一个很好的第一印象；从论文精度来说，它们更像是**被误用的内存位置**。register tokens 做的事情，就是给模型配了一组明确的临时寄存器。
