@@ -1,6 +1,7 @@
 ---
 author: Ludovico
 pubDatetime: 2026-07-21T16:00:00+08:00
+modDatetime: 2026-07-21T18:30:00+08:00
 title: "[论文精读] Vision Transformers Need Registers：给 ViT 加几个工作寄存器"
 featured: false
 draft: false
@@ -11,13 +12,22 @@ tags:
 description: Vision Transformers Need Registers 解释 ViT 中背景高范数 token 的来源，并用额外的 register tokens 把模型的隐式工作空间显式化。
 ---
 
-论文：**Vision Transformers Need Registers**，ICLR 2024。
+论文：**Vision Transformers Need Registers**，ICLR 2024。本文沿着论文的证据链回答三个问题：异常 token 到底在做什么、为什么要在训练时加入 register、以及收益为什么主要体现在空间任务。
 
 这篇论文讲了一个很有意思、也很容易用工程直觉理解的问题：Vision Transformer 在处理图片时，会把一些本来代表背景 patch 的 token 变成异常高范数的 token。它们经常出现在天空、墙面、地面这类低信息区域，看起来像特征图里的几个“亮点”。
 
 作者的解释是：这些 token 被模型借去做中间计算了。模型缺少专门的临时存储位置，于是把不太重要的背景 patch 当成了工作空间。
 
 所以，用户说它们像“垃圾桶”，方向是对的，但更准确的说法是：**背景 patch 被临时当成了工作寄存器**。它们不是无意义地丢垃圾，而是在保存模型内部计算需要的中间状态；真正的问题是，这些中间状态污染了本该表示图像内容的 token。
+
+```mermaid
+flowchart LR
+  A[低信息背景 patch] --> B[被选作内部计算位置]
+  B --> C[高范数 / 全局信息聚集]
+  C --> D[局部特征与注意力图尖峰]
+  R[显式 register tokens] --> E[专用工作空间]
+  E --> F[patch 回归局部语义]
+```
 
 ## 论文信息
 
@@ -60,11 +70,17 @@ token norm 很高
 
 ![正常 patch 与 artifact patch 的 token 范数分布](/blog/images/vision-transformers-registers/token-norm-histogram.png)
 
+以 DINOv2 ViT-g 为例，作者将输出范数大于 150 的 patch 定义为 outlier；约 **2.37%** 的 patch 落在这一区间。`150` 只是该模型双峰分布下便于区分的阈值，不是可迁移到其他 backbone 的默认超参数；实际诊断应看范数分布与空间位置。
+
 下面是论文中的一组空间特征响应图。可以看到，模型的响应并不总是和物体轮廓一致，少数背景位置也可能出现非常强的激活；这些位置正是后续 dense prediction 最容易被污染的地方。
 
 ![ViT 的空间特征响应图示例](/blog/images/vision-transformers-registers/feature-map-input.png)
 
 ![加入 register 后的空间特征响应](/blog/images/vision-transformers-registers/feature-map-register-1.png)
+
+两张图应结合着看：孤立热点不必然是“看错物体”，而是少数空间 token 已承担了非空间职责。加入 register 后，工作量被迁到不属于二维网格的 token 中。更多 register 数量的对照如下：一个 register 已能消除主要可见伪影，但下游效果仍会随数量变化。
+
+![不同数量 register 下的空间特征响应](/blog/images/vision-transformers-registers/feature-map-register-3.png)
 
 ## 为什么模型会借用背景 patch
 
@@ -84,6 +100,19 @@ Transformer 的 self-attention 允许任意 token 互相读写。某个 token �
 
 不过这个类比需要加一个限定：ViT 中的高范数 patch 并不是硬件寄存器，也不是一个预先定义好的离散缓存。它是模型在训练后自己形成的行为。论文做的是提供更合适的 token，让这种行为有专门的落脚点。
 
+## 证据不是只有可视化
+
+论文用三个互相补强的实验说明这些 token 确实被“借用”。
+
+| 观察 | 结果 | 含义 |
+| --- | --- | --- |
+| 出现位置 | DINOv2 ViT-g 的范数分叉约从 40 层网络的第 15 层开始 | 不是 patch embedding 的输入噪声，而是中层形成的策略 |
+| 训练与规模 | 大约训练三分之一后才明显；DINOv2 在 ViT-L 及以上模型出现 | 需要容量和优化过程，像一种学到的计算分工 |
+| 局部信息 probe | 正常 / outlier 的位置 top-1：41.7% / 22.8%；像素重建 L2：18.38 / 25.23 | outlier 不再忠实表达自身位置和像素 |
+| 全局信息 probe | ImageNet-1k 线性分类：普通 token 65.8%，outlier 69.0% | outlier 聚集了额外的整图语义 |
+
+这组结果比“背景处有大激活”更重要：异常 token 不是简单坏值。它们丢失局部内容的同时，获得了全局信息。因此直接裁掉它们不等价于修复模型，正确做法是先提供可替代的工作位置。
+
 ## 方法：增加 register tokens
 
 普通 ViT 的输入序列大致是：
@@ -99,6 +128,8 @@ Transformer 的 self-attention 允许任意 token 互相读写。某个 token �
 ```
 
 register token 是额外的可学习 token。它们没有对应的图像区域，也不参与最终的空间特征图。Transformer 可以通过 attention 读取和更新它们，把它们作为中间计算的工作区。
+
+形式上，标准输入 \(X_0=[x_{cls};x_1,\ldots,x_P]+E_{pos}\) 变为 \(X_0=[x_{cls};r_1,\ldots,r_R;x_1,\ldots,x_P]+E_{pos}\)。\(r_i\) 与 `CLS` 一样可学习、每层都参与 self-attention；最终仅将它们从输出序列剔除。它们不为 patch 补位置编码，也不改变 patch 的二维对应关系。
 
 关键点是：**register 不负责识别某个物体，也不是新的类别 token。它只是把模型原本隐式使用的工作空间显式提供出来。**
 
@@ -151,6 +182,26 @@ patch feature 的空间分布更加连续，局部区域之间的变化更符合
 论文在多个 dense prediction 设置中比较了加入 registers 前后的结果。收益并不只是视觉上的特征图变干净，也会反映到分割和深度估计等下游指标上。
 
 ![加入 registers 后的下游任务结果](/blog/images/vision-transformers-registers/downstream-results.png)
+
+原文中最有代表性的冻结特征评测如下：
+
+| 评测 | 原模型 | + register |
+| --- | ---: | ---: |
+| DeiT-III / ImageNet Top-1 | 84.7 | 84.7 |
+| DeiT-III / ADE20K mIoU | 38.9 | 39.1 |
+| OpenCLIP / NYUd RMSE（低更好） | 0.702 | 0.661 |
+| DINOv2 / ImageNet Top-1 | 84.3 | 84.8 |
+| DINOv2 / ADE20K mIoU | 46.6 | 47.9 |
+| DINOv2 / NYUd RMSE（低更好） | 0.378 | 0.366 |
+
+重点不是分类涨点，而是清理异常没有牺牲表示能力；对空间特征更敏感的 ADE20K、NYUd 给出更清晰的收益。在无监督目标发现 LOST 上，DINOv2 + register 的 CorLoc 从 **35.3 -> 55.4**（VOC 2007）、**40.2 -> 60.0**（VOC 2012）、**26.9 -> 42.0**（COCO-20k）。OpenCLIP 在这一特定启发式上略降，说明收益并不保证对所有下游算法单调成立。
+
+## 数量、代价与正确用法
+
+作者在 DINOv2 ViT-L/14 上测试 0、1、2、4、8、16 个 register。**1 个**已能去掉主要伪影；更多 register 对部分 dense task 有额外帮助，论文多数实验选择 **4 个**。代价来自 attention 序列变长：4 个时额外 FLOPs 低于约 2%，16 个时可到约 6%。
+
+- 不能对已经训练好的普通 ViT 在推理时随意拼随机 token。本文的 register 是训练中共同优化出来的；无法重训的 checkpoint 应看 [RegCache](/blog/posts/regcache-activation-quantization-vision-encoders-paper-reading/)。
+- 下游恢复 \(H\times W\) 特征网格时，必须显式去掉 `CLS` 和所有 register，不能把它们 reshape 成图像 patch。
 
 ## “垃圾桶”这个比喻到底对不对
 
@@ -205,3 +256,7 @@ ViT 不只是处理 patch token。
 ![另一个样例的空间特征图](/blog/images/vision-transformers-registers/feature-map-example.png)
 
 所以，“垃圾桶”是一个很好的第一印象；从论文精度来说，它们更像是**被误用的内存位置**。register tokens 做的事情，就是给模型配了一组明确的临时寄存器。
+
+## 与 RegCache 的衔接
+
+本文是训练时的结构性预防：让模型一开始就不要占用 patch。下一篇 [RegCache](/blog/posts/regcache-activation-quantization-vision-encoders-paper-reading/) 则处理已训练 checkpoint 的部署问题：用中层 KV prefix 模拟可复用 register，并删除残留 sink token，以缩小 activation quantization range。两者共享机制，但适用时机完全不同。
