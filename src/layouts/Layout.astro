@@ -4,6 +4,7 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 import { getAssetPath } from "@/utils/withBase";
 import config from "@/config";
+import "katex/dist/katex.min.css";
 import "@/styles/global.css";
 
 type Props = {
@@ -11,6 +12,8 @@ type Props = {
   description?: string;
   ogImage?: string;
   canonicalURL?: string;
+  ogType?: "article" | "website";
+  noindex?: boolean;
 };
 
 const { site } = config;
@@ -20,6 +23,8 @@ const {
   description = site.description,
   ogImage = resolveDefaultOgImagePath(config),
   canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
+  ogType = "website",
+  noindex = false,
 } = Astro.props;
 
 const socialImageURL = new URL(ogImage, Astro.site ?? Astro.url);
@@ -41,6 +46,7 @@ const rssHref = getRelativeLocaleUrl(
     <link rel="icon" type="image/svg+xml" href={getAssetPath("favicon.svg")} />
     <link rel="icon" href={getAssetPath("favicon.ico")} />
     <link rel="canonical" href={canonicalURL} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
     <meta name="generator" content={Astro.generator} />
 
     <!-- Primary meta -->
@@ -51,7 +57,7 @@ const rssHref = getRelativeLocaleUrl(
     <link rel="sitemap" href={getAssetPath("sitemap-index.xml")} />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.title} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -59,11 +65,11 @@ const rssHref = getRelativeLocaleUrl(
     <meta property="og:image" content={socialImageURL} />
 
     <!-- Twitter / X -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={socialImageURL} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageURL} />
 
     <!-- RSS autodiscovery -->
     <link
@@ -107,15 +113,6 @@ const rssHref = getRelativeLocaleUrl(
 
     <ClientRouter />
 
-    <!-- KaTeX for LaTeX math -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
-      is:inline
-    ></script>
     <!-- Mermaid -->
     <style is:global>
       div.mermaid {
@@ -131,8 +128,7 @@ const rssHref = getRelativeLocaleUrl(
     </style>
     <script
       src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"
-      is:inline
-    ></script>
+      is:inline></script>
   </head>
   <body
     class="bg-background font-app text-foreground selection:bg-accent/75 selection:text-accent-foreground flex min-h-svh flex-col"
@@ -185,7 +181,9 @@ const rssHref = getRelativeLocaleUrl(
             container.parentNode.replaceChild(div, container);
           }
 
-          var divs = document.querySelectorAll("div.mermaid:not([data-processed])");
+          var divs = document.querySelectorAll(
+            "div.mermaid:not([data-processed])"
+          );
           if (divs.length === 0) return;
 
           try {

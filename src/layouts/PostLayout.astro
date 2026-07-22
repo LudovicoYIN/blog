@@ -1,6 +1,7 @@
 ---
 import Layout from "./Layout.astro";
 import config from "@/config";
+import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 
 type Props = {
   title?: string;
@@ -9,35 +10,51 @@ type Props = {
   canonicalURL?: string;
   pubDatetime?: Date;
   modDatetime?: Date | null;
+  headline?: string;
+  author?: string;
 };
 
 const { site } = config;
 
-const { title, description, ogImage, canonicalURL, pubDatetime, modDatetime } =
-  Astro.props;
+const {
+  title,
+  description,
+  ogImage,
+  canonicalURL,
+  pubDatetime,
+  modDatetime,
+  headline,
+  author = site.author,
+} = Astro.props;
+
+const pageURL = canonicalURL ?? new URL(Astro.url.pathname, Astro.site).href;
+const socialImageURL = new URL(
+  ogImage ?? resolveDefaultOgImagePath(config),
+  Astro.site ?? Astro.url
+).href;
 
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  headline: title ?? site.title,
-  image: ogImage,
+  mainEntityOfPage: { "@type": "WebPage", "@id": pageURL },
+  headline: headline ?? title ?? site.title,
+  description,
+  image: socialImageURL,
+  url: pageURL,
   ...(pubDatetime && { datePublished: pubDatetime.toISOString() }),
   ...(modDatetime && { dateModified: modDatetime.toISOString() }),
   author: [
     {
       "@type": "Person",
-      name: site.author,
+      name: author,
       ...(site.profile && { url: site.profile }),
     },
   ],
 };
 ---
 
-<Layout {title} {description} {ogImage} {canonicalURL}>
+<Layout {title} {description} {ogImage} {canonicalURL} ogType="article">
   <Fragment slot="head">
-    <!-- Override og:type for article pages -->
-    <meta property="og:type" content="article" />
-
     {
       pubDatetime && (
         <meta
@@ -60,7 +77,6 @@ const structuredData = {
       is:inline
       set:html={JSON.stringify(structuredData)}
     />
-
   </Fragment>
 
   <slot />

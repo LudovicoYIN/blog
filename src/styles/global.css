@@ -35,3 +35,12 @@
 :target {
   scroll-margin-block: 1rem;
 }
+
+/* Keep wide equations readable on narrow screens without clipping the article. */
+.katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.15rem;
+  scrollbar-width: thin;
+}
