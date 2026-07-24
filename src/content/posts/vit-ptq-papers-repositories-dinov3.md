@@ -14,7 +14,7 @@ description: "一张以问题为线索的 ViT 训练后量化地图：各论文�
 
 ViT 的 W8A8 不能只看一份 ImageNet 表格。不同论文处理的是不同的数值故障：GELU/Softmax 的非均匀分布、LayerNorm 的通道尺度差、线性层输入的 channel outlier，或者视觉 encoder 中少数 token 的超大范数。把它们都叫作“ViT PTQ”会掩盖关键的适用条件。
 
-本文按问题而非发表时间梳理公开论文和官方仓库，并将其与 `research` 里的 DINOv3 ViT-B/16 ONNX 实验对照。链接和仓库在 2026-07-22 逐一核对；论文中的精度均是作者在其任务、模型和后端下的结果，不能横向当作同一基准。
+本文按问题而非发表时间梳理公开论文和官方仓库，并将其与 DINOv3 ViT-B/16 ONNX 实验对照。链接和仓库在 2026-07-22 逐一核对；论文中的精度均是作者在其任务、模型和后端下的结果，不能横向当作同一基准。
 
 ## 先给选择结论
 
@@ -65,9 +65,9 @@ LayerNorm 输入存在严重的 **inter-channel variation**。逐 channel scale 
 
 两者都不训练模型，利用线性层的等价变换改变量化时看见的分布。对 `Y = XW + b`，取逐通道正 scale `s`，可写成：
 
-\[
+$$
 Y=(X / s)\,(\operatorname{diag}(s)W)+b.
-\]
+$$
 
 SmoothQuant 用 activation maxima 与 weight maxima、以及 alpha 计算 `s`，在二者间分摊难度。RepQ-ViT 更针对 ViT：对 post-LayerNorm 的逐 channel 变化做 scale/shift 重参数化，并对 post-Softmax 处理极端分布。二者的价值是 FP32 图保持等价，因此可以把“改模型”变成可验证的图重写。
 
@@ -104,9 +104,9 @@ Delete:  在敏感层删除仍在当前图像内形成的 patch sink
 
 profile 定位到 block 2：register token 2/1 的 FC2 输入平均 L-infinity 为 `804.45/666.67`，patch 平均约 `2.80`。这与 RegCache 的典型前提不同：异常值不是可删背景 patch，而是模型已经训练出的 `storage_tokens`。
 
-本地 `build_regcache_model.py` 因此做了反证。cache-only 的 FP32 近似尚可（8 图 mean cosine `0.99765`），但线性 A8 重建仍只有 `0.86972`；若删除 block 2 的 register，FP32 cosine 已降至 `0.81647`。原因并不神秘：原 register 仍在 residual/MLP 流中污染 scale；删除它又删掉了模型确实依赖的状态。**这不是 RegCache 论文失败，而是模型结构不满足其删除假设。**
+针对这一假设的反证实验显示：cache-only 的 FP32 近似尚可（8 图 mean cosine `0.99765`），但线性 A8 重建仍只有 `0.86972`；若删除 block 2 的 register，FP32 cosine 已降至 `0.81647`。原因并不神秘：原 register 仍在 residual/MLP 流中污染 scale；删除它又删掉了模型确实依赖的状态。**这不是 RegCache 论文失败，而是模型结构不满足其删除假设。**
 
-对应的 ONNX 工具在 `research` 中：`smoothquant_dinov3.py` 重写 48 个 QKV/proj/FC1/FC2 MatMul，`repq_vit_onnx.py` 重写 24 个 LayerNorm-to-linear 边界，`split_register_linear_paths.py` 将每个 projection 拆为 CLS/register/patch 支路。所有图重写都应先检查 FP32 等价，再做量化比较。
+实验分别对 48 个 QKV/proj/FC1/FC2 MatMul 做 SmoothQuant 重写、对 24 个 LayerNorm-to-linear 边界做 RepQ-ViT 式重参数化，并将每个 projection 拆为 CLS/register/patch 三条支路。所有图重写都应先检查 FP32 等价，再做量化比较。
 
 ## 6. 面向 QNN 的实际落地顺序
 
@@ -124,6 +124,5 @@ profile 定位到 block 2：register token 2/1 的 FC2 输入平均 L-infinity �
 - [SmoothQuant 论文](https://arxiv.org/abs/2211.10438) 与 [官方仓库](https://github.com/mit-han-lab/smoothquant)
 - [RegCache 论文](https://arxiv.org/abs/2510.04547)；本文不将未被论文链接核验的仓库列为官方代码
 - [Vision Transformers Need Registers](https://arxiv.org/abs/2309.16588) 与 [DINOv2 官方仓库](https://github.com/facebookresearch/dinov2)
-- 本地实验细节：`research/deliverables/dinov3_w8a8_register_a16_reproduction/docs/ABLATION.md` 与 `research/EXPERIMENTS.md`
 
 真正可迁移的不是某个 observer 的名字，而是诊断顺序：先确定 outlier 是落在 channel、算子还是 token 身上，再让量化格式、图重写和硬件内核匹配同一个事实。

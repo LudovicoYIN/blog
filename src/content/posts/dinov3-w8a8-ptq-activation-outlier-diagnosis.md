@@ -38,7 +38,7 @@ description: "DINOv3 ViT-B/16 的标准全图 W8A8 为何失效？64 张图的�
 - learned registers（4 个 token）；
 - image patches（64 个 token）。
 
-除 min/max、均值、标准差和元素分位数外，最重要的指标是每个 token 的 L-infinity norm，即该 token 的最大绝对通道值。它直接回答了“哪个 token 决定 activation scale”。完整统计脚本和 JSON/Markdown 产物位于研究仓库的 `profile_fp_layer_distributions.py` 与 `artifacts/fp_layer_distribution_64/`。
+除 min/max、均值、标准差和元素分位数外，最重要的指标是每个 token 的 L-infinity norm，即该 token 的最大绝对通道值。它直接回答了“哪个 token 决定 activation scale”。文中的统计基于 64 张图像的逐层 FP32 profile，原始统计同时保留为 JSON 和 Markdown 表格。
 
 ## 图一：异常从 block 2 开始，并留在残差主干
 
@@ -70,11 +70,11 @@ Residual Add: 5942.9
 
 LayerScale 最早由 CaiT 提出，用于让更深的 Image Transformer 更容易训练。每一个残差分支不是直接相加，而是先做逐通道缩放：
 
-\[
+$$
 x_{l+1} = x_l + \gamma_l \odot F_l(\operatorname{LN}(x_l))
-\]
+$$
 
-其中 \(\gamma_l\) 是长度为 hidden dimension 的可学习向量，而不是每个 token 一个系数。它通常以很小的常数初始化，例如 DINO 系列实现中的 `1e-5`；这样训练刚开始时 residual update 很小，深层网络更稳定。训练完成后，gamma 会按通道学习到不同的大小和正负号。
+其中 $\gamma_l$ 是长度为 hidden dimension 的可学习向量，而不是每个 token 一个系数。它通常以很小的常数初始化，例如 DINO 系列实现中的 `1e-5`；这样训练刚开始时 residual update 很小，深层网络更稳定。训练完成后，gamma 会按通道学习到不同的大小和正负号。
 
 这和 LayerNorm 不同：LayerNorm 对每个 token 的 channel 维度做标准化；LayerScale 不做标准化，也不会识别“哪个 token 是 outlier”。它只是把所有 token 在每一个 channel 上乘同一组 gamma。
 
@@ -100,7 +100,7 @@ QNN V68 可以支持 A16 x W8 到 A16 MatMul，也支持 A16 Add；但标准 Con
 
 ## 可复现性与下一步
 
-绘图脚本 `render_fp_distribution_figures.py` 直接读取 64 图 FP32 profile 和 ONNX 中的 `model.blocks.2.ls2.gamma`，生成本文三张图。因此更新校准集或模型后，可以重新生成图，而不是手工改数字。
+本文三张图由 64 图 FP32 profile 和 ONNX 中 `model.blocks.2.ls2.gamma` 的参数自动生成。因此更新校准集或模型后，可以重新生成图，而不是手工改数字。
 
 下一步会把 FP 分布与 A8 仿真的逐层误差并排，确定误差首次陡增的量化点；之后在真实 QNN V68 图上验证“register A16、其余 A8”的混合精度边界。量化的关键不是把模型每层都变成 INT8，而是先找出哪些数值状态根本无法共用一把 INT8 的尺子。
 
