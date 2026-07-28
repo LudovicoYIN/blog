@@ -2,6 +2,7 @@
   <title id="title">HQQ zero point refinement loop</title>
   <desc id="desc">A short alternating loop quantizes, reconstructs, shrinks the residual, and updates the group zero point.</desc>
   <rect width="1200" height="620" fill="#f7f8fa"/>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/></marker></defs>
   <style>text{font-family:Arial,sans-serif;fill:#172033}.h{font-size:27px;font-weight:700}.b{font-size:18px}.s{font-size:15px;fill:#506078}.box{stroke-width:2}.eq{font-size:20px;font-weight:700}</style>
   <text x="72" y="65" class="h">The default HQQ solver: a short alternating refinement of the zero point</text>
   <rect x="85" y="145" width="235" height="125" rx="8" fill="#dbeafe" stroke="#2563eb" class="box"/>
@@ -10,12 +11,12 @@
   <text x="512" y="188" class="h">2. Reconstruct</text><text x="512" y="225" class="eq">W_hat = (q - z) / s</text><text x="512" y="251" class="s">measure its residual</text>
   <rect x="885" y="145" width="235" height="125" rx="8" fill="#f3e8ff" stroke="#9333ea" class="box"/>
   <text x="912" y="188" class="h">3. Shrink error</text><text x="912" y="225" class="eq">e = shrink(W - W_hat)</text><text x="912" y="251" class="s">L_p, p = 0.7 by default</text>
-  <path d="M330 207H470" stroke="#475569" stroke-width="3"/><path d="M460 197l20 10-20 10" fill="#475569"/>
-  <path d="M730 207H870" stroke="#475569" stroke-width="3"/><path d="M860 197l20 10-20 10" fill="#475569"/>
-  <path d="M1000 280V365H602" stroke="#475569" stroke-width="3" fill="none"/><path d="M612 355l-20 10 20 10" fill="#475569"/>
-  <text x="760" y="343" class="s">increase beta by kappa = 1.01</text>
+  <path d="M320 207H485" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M720 207H885" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M1000 270V335H602V365" stroke="#475569" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="760" y="323" class="s">increase beta by kappa = 1.01</text>
   <rect x="435" y="365" width="335" height="130" rx="8" fill="#ffedd5" stroke="#ea580c" class="box"/>
   <text x="462" y="408" class="h">4. Update zero point</text><text x="462" y="445" class="eq">z = mean(q - (W - e)*s)</text><text x="462" y="473" class="s">one value per group</text>
-  <path d="M425 430H202V280" stroke="#475569" stroke-width="3" fill="none"/><path d="M192 290l10-20 10 20" fill="#475569"/>
+  <path d="M435 430H202V270" stroke="#475569" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
   <text x="82" y="560" class="s">Source behavior: the repository selects the best reconstruction error and stops when the next iteration no longer improves it (up to 20 iterations).</text>
 </svg>

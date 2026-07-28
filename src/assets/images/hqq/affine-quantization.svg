@@ -2,6 +2,7 @@
   <title id="title">HQQ affine quantization pipeline</title>
   <desc id="desc">Floating point weights are grouped, quantized to unsigned integers with scale and zero point, packed, then reconstructed linearly.</desc>
   <rect width="1200" height="520" fill="#f7f8fa"/>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/></marker></defs>
   <style>text{font-family:Arial,sans-serif;fill:#172033}.h{font-size:25px;font-weight:700}.b{font-size:18px}.s{font-size:15px;fill:#506078}.box{stroke-width:2}.eq{font-family:Arial,sans-serif;font-size:22px;font-weight:700}</style>
   <text x="72" y="65" class="h">HQQ: one group goes through an affine integer codebook</text>
   <rect x="70" y="150" width="225" height="190" rx="8" fill="#dbeafe" stroke="#2563eb" class="box"/>
@@ -9,7 +10,7 @@
   <text x="95" y="230" class="b">one weight group</text>
   <text x="95" y="275" class="eq">[-0.81, 0.14, ...]</text>
   <text x="95" y="309" class="s">keep the original shape later</text>
-  <path d="M305 245H390" stroke="#475569" stroke-width="3"/><path d="M380 235l20 10-20 10" fill="#475569"/>
+  <path d="M295 245H410" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
   <text x="318" y="220" class="s">min / max init</text>
   <rect x="410" y="120" width="325" height="250" rx="8" fill="#dcfce7" stroke="#16a34a" class="box"/>
   <text x="438" y="165" class="h">integer code q</text>
@@ -17,7 +18,7 @@
   <text x="438" y="239" class="b">4 bit: q in [0, 15]</text>
   <text x="438" y="274" class="b">s: inverse step, z: zero point</text>
   <text x="438" y="322" class="s">HQQ refines z with a short loop</text>
-  <path d="M745 245H830" stroke="#475569" stroke-width="3"/><path d="M820 235l20 10-20 10" fill="#475569"/>
+  <path d="M735 245H850" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
   <rect x="850" y="150" width="270" height="190" rx="8" fill="#ffedd5" stroke="#ea580c" class="box"/>
   <text x="880" y="195" class="h">stored representation</text>
   <text x="880" y="235" class="b">packed q + scale + zero</text>
