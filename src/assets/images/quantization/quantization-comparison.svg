@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="570" viewBox="0 0 1200 570" role="img" aria-labelledby="title desc">
+  <title id="title">均匀量化和向量量化对比</title>
+  <desc id="desc">比较两种量化方法对四个权重的存储方式、反量化方式和部署特点。</desc>
+  <rect width="1200" height="570" fill="#f8fafc"/>
+  <style>
+    .title{font:700 26px sans-serif;fill:#172033}.head{font:700 20px sans-serif;fill:#fff}.cell{font:16px sans-serif;fill:#334155}.mono{font:600 15px monospace;fill:#172033}.left{fill:#0f766e}.right{fill:#c2410c}.grid{stroke:#cbd5e1;stroke-width:2}.note{font:16px sans-serif;fill:#475569}
+  </style>
+  <text x="56" y="52" class="title">同样是压缩权重，保存的对象不同</text>
+  <rect x="54" y="90" width="530" height="58" rx="10" class="left"/>
+  <text x="80" y="127" class="head">均匀量化</text>
+  <rect x="616" y="90" width="530" height="58" rx="10" class="right"/>
+  <text x="642" y="127" class="head">向量量化</text>
+  <line x1="54" y1="148" x2="1146" y2="148" class="grid"/>
+  <line x1="584" y1="90" x2="584" y2="510" class="grid"/>
+  <text x="80" y="188" class="cell">量化对象</text><text x="310" y="188" class="mono">每个权重</text>
+  <text x="642" y="188" class="cell">量化对象</text><text x="872" y="188" class="mono">一组向量</text>
+  <line x1="54" y1="210" x2="1146" y2="210" class="grid"/>
+  <text x="80" y="250" class="cell">保存内容</text><text x="310" y="250" class="mono">整数码 + scale/offset</text>
+  <text x="642" y="250" class="cell">保存内容</text><text x="872" y="250" class="mono">向量索引 + 码本</text>
+  <line x1="54" y1="272" x2="1146" y2="272" class="grid"/>
+  <text x="80" y="312" class="cell">反量化</text><text x="310" y="312" class="mono">q * scale + offset</text>
+  <text x="642" y="312" class="cell">反量化</text><text x="872" y="312" class="mono">codebook[index]</text>
+  <line x1="54" y1="334" x2="1146" y2="334" class="grid"/>
+  <text x="80" y="374" class="cell">优势</text><text x="180" y="374" class="cell">硬件友好、实现简单</text>
+  <text x="642" y="374" class="cell">优势</text><text x="742" y="374" class="cell">利用权重相关性，低 bit 精度好</text>
+  <line x1="54" y1="396" x2="1146" y2="396" class="grid"/>
+  <text x="80" y="436" class="cell">代价</text><text x="180" y="436" class="cell">低 bit 下误差可能较大</text>
+  <text x="642" y="436" class="cell">代价</text><text x="742" y="436" class="cell">查表、码本和 kernel 更复杂</text>
+  <line x1="54" y1="458" x2="1146" y2="458" class="grid"/>
+  <text x="56" y="520" class="note">选择哪一种，取决于目标：是优先通用硬件部署，还是优先极低比特下的重建精度。</text>
+</svg>
