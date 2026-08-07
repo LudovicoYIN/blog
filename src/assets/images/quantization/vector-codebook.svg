@@ -3,31 +3,31 @@
   <desc id="desc">一个四维权重向量整体匹配到码本中的一个候选向量，只保存候选向量的索引。</desc>
   <rect width="1200" height="620" fill="#f8fafc"/>
   <style>
-    .title{font:700 26px sans-serif;fill:#172033}.label{font:600 18px sans-serif;fill:#334155}.small{font:16px sans-serif;fill:#475569}.mono{font:600 16px monospace;fill:#172033}.box{fill:#fff;stroke:#cbd5e1;stroke-width:2}.sel{fill:#fef3c7;stroke:#d97706;stroke-width:3}.muted{fill:#f1f5f9;stroke:#cbd5e1;stroke-width:2}.arrow{stroke:#d97706;stroke-width:4;fill:none}.head{fill:#fff7ed;stroke:#fed7aa;stroke-width:2}
+    .title{font-family:'Noto Sans CJK SC',Arial,sans-serif;font-size:26px;font-weight:700;fill:#172033}.label{font-family:'Noto Sans CJK SC',Arial,sans-serif;font-size:18px;font-weight:600;fill:#334155}.small{font-family:'Noto Sans CJK SC',Arial,sans-serif;font-size:16px;fill:#475569}.mono{font-family:'Noto Sans Mono CJK SC',monospace;font-size:16px;font-weight:600;fill:#172033}.box{fill:#fff;stroke:#cbd5e1;stroke-width:2}.sel{fill:#fef3c7;stroke:#d97706;stroke-width:3}.muted{fill:#f1f5f9;stroke:#cbd5e1;stroke-width:2}.arrow{stroke:#d97706;stroke-width:4;fill:none}.head{fill:#fff7ed;stroke:#fed7aa;stroke-width:2}
   </style>
-  <text x="56" y="54" class="title">向量量化：一组权重整体选择一个码本模板</text>
-  <text x="56" y="92" class="small">权重块不是逐元素取刻度，而是与候选向量比较距离，保存最近模板的编号。</text>
-  <text x="60" y="148" class="label">原始权重块</text>
+  <text x="56" y="54" class="title">Vector quantization</text>
+  <text x="56" y="92" class="small">Match a weight block to the closest codebook vector.</text>
+  <text x="60" y="148" class="label">Weight block</text>
   <rect x="54" y="170" width="330" height="90" rx="12" class="box"/>
   <text x="84" y="224" class="mono">w = [0.80, 0.70, -0.20, 0.10]</text>
   <path d="M 400 214 L 470 214" class="arrow"/>
   <path d="M 470 214 l -14 -9 v 18 z" fill="#d97706"/>
-  <text x="405" y="188" class="small">找最近的</text>
-  <text x="405" y="244" class="small">向量</text>
-  <text x="505" y="148" class="label">码本（4 个候选向量）</text>
+  <text x="405" y="188" class="small">Find</text>
+  <text x="405" y="244" class="small">closest</text>
+  <text x="505" y="148" class="label">Codebook (4 candidates)</text>
   <rect x="500" y="170" width="610" height="250" rx="12" class="head"/>
   <rect x="528" y="190" width="554" height="42" rx="8" class="muted"/>
   <text x="550" y="218" class="mono">C0 = [0.00, 0.00, 0.00, 0.00]</text>
   <rect x="528" y="242" width="554" height="42" rx="8" class="sel"/>
-  <text x="550" y="270" class="mono">C1 = [0.80, 0.80, -0.10, 0.10]  &lt;- 最近</text>
+  <text x="550" y="270" class="mono">C1 = [0.80, 0.80, -0.10, 0.10]  &lt;- closest</text>
   <rect x="528" y="294" width="554" height="42" rx="8" class="muted"/>
   <text x="550" y="322" class="mono">C2 = [-0.50, 0.50, 0.00, 0.20]</text>
   <rect x="528" y="346" width="554" height="42" rx="8" class="muted"/>
   <text x="550" y="374" class="mono">C3 = [1.00, -1.00, 0.50, -0.50]</text>
   <path d="M 805 420 L 805 470" class="arrow"/>
   <path d="M 805 470 l -14 -9 v 18 z" fill="#d97706"/>
-  <text x="860" y="451" class="small">只保存索引</text>
+  <text x="860" y="451" class="small">Store index only</text>
   <rect x="500" y="486" width="610" height="72" rx="12" class="sel"/>
-  <text x="535" y="530" class="mono">index = 1  ->  2 bit（00/01/10/11）</text>
-  <text x="60" y="596" class="small">反量化：读取 index=1，再查表得到 w_hat = C1。码本本身需要额外存储。</text>
+  <text x="535" y="530" class="mono">index = 1  ->  2 bit (00/01/10/11)</text>
+  <text x="60" y="596" class="small">Dequant: index=1 -> lookup C1. The codebook is stored separately.</text>
 </svg>
