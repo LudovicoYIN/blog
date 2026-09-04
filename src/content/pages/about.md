@@ -9,7 +9,7 @@ description: "关于我和这个博客。"
     alt="银韩柯头像"
     class="h-24 w-24 rounded-full border border-border object-cover shadow-sm"
   />
-  <p class="mt-4 text-lg font-semibold text-foreground">银韩柯</p>
+  <p class="mt-4 text-lg font-semibold text-foreground">LudovicoYIN</p>
   <p class="mt-1 text-sm text-muted-foreground">
     AI Engineer / Research Builder
   </p>
